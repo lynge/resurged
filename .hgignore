@@ -1,0 +1,9 @@
+# use glob syntax.
+syntax: glob
+
+.classpath
+.project
+MyDbTest
+target
+*.log
+*~
