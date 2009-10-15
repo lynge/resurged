@@ -78,6 +78,7 @@ class FieldMarshaller{
 		if(!accessible)
 			field.setAccessible(true);
 		
+		System.out.println("Geting " + fieldName);
 		field.set(o, rs.getObject(fieldName));
 
 		if(!accessible)
