@@ -79,7 +79,19 @@ class FieldMarshaller{
 			field.setAccessible(true);
 		
 		System.out.println("Geting " + fieldName);
-		field.set(o, rs.getObject(fieldName));
+		Object value = rs.getObject(fieldName);
+		if(value!=null && value instanceof Integer &&(field.getType()==Byte.TYPE || field.getType()==Byte.class))
+			field.set(o, ((Integer)value).byteValue());
+		else if(value!=null && value instanceof Integer &&(field.getType()==Short.TYPE || field.getType()==Short.class))
+			field.set(o, ((Integer)value).shortValue());
+		else if(value!=null && value instanceof Long &&(field.getType()==Integer.TYPE || field.getType()==Integer.class))
+			field.set(o, ((Long)value).intValue());
+		else if(value!=null && value instanceof Double &&(field.getType()==Float.TYPE || field.getType()==Float.class))
+			field.set(o, ((Double)value).floatValue());
+		else if(value!=null && value instanceof Integer &&(field.getType()==Boolean.TYPE || field.getType()==Boolean.class))
+			field.set(o, ((Integer)value)!=0);
+		else
+			field.set(o, value);
 
 		if(!accessible)
 			field.setAccessible(false);

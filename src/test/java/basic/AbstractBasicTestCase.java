@@ -8,9 +8,9 @@ import junit.framework.TestCase;
 import org.resurged.QueryObjectFactory;
 import org.resurged.jdbc.DataSet;
 
-public class BasicTest extends TestCase {
-	private Connection con = null;
-	private PersonDao personDao;
+public abstract class AbstractBasicTestCase extends TestCase{
+	protected Connection con = null;
+	private PersonDao dao;
 
 	@Override
 	protected void setUp() throws Exception {
@@ -18,9 +18,11 @@ public class BasicTest extends TestCase {
 
 		Class.forName("org.apache.derby.jdbc.EmbeddedDriver").newInstance();
 		con = DriverManager.getConnection("jdbc:derby:MyDbTest;create=true");
-		personDao = QueryObjectFactory.createQueryObject(PersonDao.class, con);
+		
+		dao = QueryObjectFactory.createQueryObject(PersonDao.class, con);
+		System.out.println("dao loaded");
 
-		int createResult = personDao.createTable();
+		int createResult = dao.createTable();
 		System.out.println("Table create, rows affected: " + createResult);
 	}
 
@@ -28,7 +30,7 @@ public class BasicTest extends TestCase {
 	protected void tearDown() throws Exception {
 		super.tearDown();
 
-		int dropResult = personDao.dropTable();
+		int dropResult = dao.dropTable();
 		System.out.println("Table dropped, rows affected: " + dropResult);
 
 		if (con != null)
@@ -39,35 +41,39 @@ public class BasicTest extends TestCase {
 			DriverManager.getConnection("jdbc:derby:MyDbTest;shutdown=true");
 		} catch (Exception e) {}
 	}
-
+	
 	public void testSimpleQueries() throws Exception {
-		int rowsAffected = personDao.insert(1, "Arthur", "Dent");
+		int rowsAffected = dao.insert(1, "Arthur", "Dent");
 		System.out.println("Row inserted, rows affected: " + rowsAffected);
 
-		rowsAffected += personDao.insert(2, "Ford", "Prefect");
+		rowsAffected += dao.insert(2, "Ford", "Prefect");
 		System.out.println("Row inserted, rows affected: " + rowsAffected);
 
-		rowsAffected += personDao.insert(3, "Ford", "Prefect");
+		rowsAffected += dao.insert(3, "Ford", "Prefect");
 		System.out.println("Row inserted, rows affected: " + rowsAffected);
 
 		assertEquals(3, rowsAffected);
+		
+		int affected = dao.update(2, "Zaphod", "Beeblebrox");
+		System.out.println("Row updated, rows affected: " + affected);
+		assertEquals(1, affected);
 
-		DataSet<Person> all = personDao.getAll();
+		DataSet<Person> all = dao.getAll();
 		assertEquals(3, all.size());
 		for (Person dto : all) {
 			System.out.println(dto.toString());
 		}
 
-		DataSet<Person> some = personDao.getSome(1);
+		DataSet<Person> some = dao.getSome(1);
 		assertEquals(1, some.size());
 		for (Person dto : some) {
 			System.out.println(dto.toString());
 		}
 
-		rowsAffected -= personDao.delete(1);
+		rowsAffected -= dao.delete(1);
 		System.out.println("Row deleted, rows left: " + rowsAffected);
 
-		rowsAffected -= personDao.deleteAll();
+		rowsAffected -= dao.deleteAll();
 		System.out.println("Row deleted, rows left: " + rowsAffected);
 
 		assertEquals(0, rowsAffected);

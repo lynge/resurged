@@ -5,7 +5,7 @@ import junit.framework.TestCase;
 
 import org.resurged.QueryObjectFactory;
 
-public class NoPackageTest extends TestCase {
+public class AbstractNoPackageTestCase extends TestCase {
 	private Connection con = null;
 	private NoPackageDao dao;
 

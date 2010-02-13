@@ -1,4 +1,4 @@
-package org.resurged.classgen;
+package org.resurged.classgen.jdk6;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
@@ -21,7 +21,7 @@ import org.resurged.jdbc.SQLRuntimeException;
 import org.resurged.jdbc.Select;
 import org.resurged.jdbc.Update;
 
-public class QueryObjectGeneratorImpl implements QueryObjectGenerator {
+public class JdkGenerator implements QueryObjectGenerator {
 
 	@Override
 	public <T extends BaseQuery> T createQueryObject(Class<T> ifc, DataSource ds)
@@ -37,9 +37,9 @@ public class QueryObjectGeneratorImpl implements QueryObjectGenerator {
 			StringBuilder sb = new StringBuilder();
 			if(ifc.getPackage() != null)
 				sb.append("package ").append(ifc.getPackage().getName()).append(";").append(cr);
-			sb.append("public class ").append(ifc.getSimpleName()).append("Impl implements ").append(ifc.getName()).append(" {").append(cr);
+			sb.append("public class ").append(ifc.getSimpleName()).append("Resurged implements ").append(ifc.getName()).append(" {").append(cr);
 			sb.append(tb).append("private final java.sql.Connection con;").append(cr);
-			sb.append(tb).append("public ").append(ifc.getSimpleName()).append("Impl(java.sql.Connection con){").append(cr);
+			sb.append(tb).append("public ").append(ifc.getSimpleName()).append("Resurged(java.sql.Connection con){").append(cr);
 			sb.append(tb).append(tb).append("this.con=con;").append(cr);
 			sb.append(tb).append("}").append(cr);
 			
@@ -122,7 +122,7 @@ public class QueryObjectGeneratorImpl implements QueryObjectGenerator {
 			final DiagnosticCollector<JavaFileObject> errs = new DiagnosticCollector<JavaFileObject>();
 			
 			String qualifiedName = (ifc.getPackage() != null)? ifc.getName() : ifc.getSimpleName();
-			Class<T> compiledFunction = compiler.compile(qualifiedName + "Impl", sb.toString(), errs, new Class<?>[] { Object.class });
+			Class<T> compiledFunction = compiler.compile(qualifiedName + "Resurged", sb.toString(), errs, new Class<?>[] { Object.class });
 			log(errs);
 
 			Constructor generatedConstructor = compiledFunction.getConstructor(Connection.class);

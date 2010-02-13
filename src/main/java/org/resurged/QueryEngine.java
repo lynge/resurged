@@ -79,7 +79,7 @@ public class QueryEngine {
 	}
 
 	public static int executeUpdate(Connection con, String query, Object[] params) {
-		Log.debug(QueryEngine.class, "executeUpdate(" + con + ", " + query + ", " + params + ")");
+		Log.info(QueryEngine.class, "executeUpdate(" + con + ", " + query + ", " + params + ")");
 		if(params.length == 0)
 			return executeUpdate(con, query);
 		
@@ -165,7 +165,7 @@ class ParameterizedQuery {
 		int idx = 0;
 
 		StringBuffer prms = new StringBuffer(1024);
-		if ((params != null) && (paramCount > 0))
+		if ((params != null) && (paramCount > 0)){
 			for (int i = 0; i < paramCount; i++) {
 				idx = paramOrder[i] - 1;
 				if ((idx >= 0) && (idx < params.length)) {
@@ -184,6 +184,7 @@ class ParameterizedQuery {
 						int sqlType = getNullParameterType(idx);
 						stmt.setNull(i + 1, sqlType);
 					} else {
+						Log.info(this, params[idx].toString());
 						int sqlType = getParameterType(idx);
 						if (sqlType != UNDEFINED_SQL_TYPE)
 							stmt.setObject(i + 1, params[idx], sqlType);
@@ -193,6 +194,7 @@ class ParameterizedQuery {
 				} else
 					throw new SQLException("SQL parameter :" + paramOrder[i] + " exceeds the number of parameters.");
 			}
+		}
 	}
 
 	public int getNullParameterType(int parameterNo) {

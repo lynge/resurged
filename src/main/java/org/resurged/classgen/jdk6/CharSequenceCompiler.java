@@ -1,4 +1,4 @@
-package org.resurged.classgen;
+package org.resurged.classgen.jdk6;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
