@@ -7,16 +7,16 @@ import org.resurged.jdbc.Update;
 
 public interface PersonDao extends BaseQuery{
 	
-	@Update("CREATE TABLE Persons(id int, firstName varchar(255), lastName varchar(255))")
+	@Update(sql="CREATE TABLE Persons(ID int, FIRST_NAME varchar(255), LASTNAME varchar(255))")
 	public int createTable();
 	
 	@Update("drop table Persons")
 	public int dropTable();
 	
-	@Update("INSERT INTO Persons (id, firstName, lastName) VALUES (?1, ?2, ?3)")
+	@Update("INSERT INTO Persons (id, first_Name, lastName) VALUES (?1, ?2, ?3)")
 	public int insert(int id, String firstName, String lastName);
 	
-	@Update("UPDATE Persons SET firstName=?2, lastName=?3 WHERE id=?1")
+	@Update("UPDATE Persons SET first_Name=?2, lastName=?3 WHERE id=?1")
 	public int update(int id, String firstName, String lastName);
 	
 	@Update("DELETE FROM Persons WHERE id=?1")

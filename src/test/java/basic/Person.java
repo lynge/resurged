@@ -1,8 +1,13 @@
 package basic;
 
+import org.resurged.jdbc.ResultColumn;
+
 public class Person {
 	private String lastName;
+	
+	@ResultColumn("FIRST_NAME")
 	private String firstName;
+	
 	private int id;
 
 	public String getLastName() {
