@@ -11,6 +11,7 @@ import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
+import org.resurged.jdbc.SQLRuntimeException;
 import org.resurged.jdbc.Select;
 import org.resurged.jdbc.Update;
 
@@ -69,7 +70,22 @@ public class AsmAdapter extends ClassAdapter {
 		
 		Method method = methods.get(methodDescriptor);
 		Annotation annotation = annotations.get(methodDescriptor);
-		String annotationValue = (annotation instanceof Select)? ((Select) annotation).value() : ((Update) annotation).value();
+
+		String annotationValue="", annotationSql="";
+		if(annotation instanceof Select){
+			annotationValue=((Select)annotation).value();
+			annotationSql=((Select)annotation).sql();
+		}else if(annotation instanceof Update){
+			annotationValue=((Update)annotation).value();
+			annotationSql=((Update)annotation).sql();
+		}
+		
+		if(annotationValue.trim().length()==0 && annotationSql.trim().length()==0)
+			throw new SQLRuntimeException("@" + annotation.getClass().getSimpleName() + " Either the sql or value attribute must be provided");
+		else if(annotationValue.trim().length()>0 && annotationSql.trim().length()>0)
+			throw new SQLRuntimeException("@" + annotation.getClass().getSimpleName() + " Only the sql or value attribute must be provided");
+		
+		String query=(annotationValue.trim().length()>0)?annotationValue:annotationSql;
 		
 		// generate method signature
 		MethodVisitor mv = cv.visitMethod(Opcodes.ACC_PUBLIC, name, desc, signature, exceptions);
@@ -103,7 +119,7 @@ public class AsmAdapter extends ClassAdapter {
 		mv.visitFieldInsn(Opcodes.GETFIELD, internalClassName, "con", "Ljava/sql/Connection;");
 		
 		// stack.push the query string
-		mv.visitLdcInsn(annotationValue);
+		mv.visitLdcInsn(query);
 		
 		// stack.push size of parameter array
 		mv.visitIntInsn(Opcodes.BIPUSH, method.getParameterTypes().length);

@@ -1,5 +1,6 @@
 package org.resurged.classgen.jdk6;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
@@ -7,7 +8,6 @@ import java.lang.reflect.Type;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
-
 
 import javax.sql.DataSource;
 import javax.tools.Diagnostic;
@@ -45,15 +45,26 @@ public class JdkGenerator implements QueryObjectGenerator {
 			
 			Method[] declaredMethods = ifc.getDeclaredMethods();
 			for (int i = 0; i < declaredMethods.length; i++) {
-				boolean isSelect = true;
-				String query = null;
+				Annotation annotation=null;
+				String annotationValue="", annotationSql="";
 				
 				if(declaredMethods[i].isAnnotationPresent(Select.class)){
-					query = declaredMethods[i].getAnnotation(Select.class).value();
+					annotation=declaredMethods[i].getAnnotation(Select.class);
+					annotationValue=((Select)annotation).value();
+					annotationSql=((Select)annotation).sql();
 				}else if(declaredMethods[i].isAnnotationPresent(Update.class)){
-					isSelect = false;
-					query = declaredMethods[i].getAnnotation(Update.class).value();
+					annotation=declaredMethods[i].getAnnotation(Update.class);
+					annotationValue=((Update)annotation).value();
+					annotationSql=((Update)annotation).sql();
 				}
+				
+				if(annotationValue.trim().length()==0 && annotationSql.trim().length()==0)
+					throw new SQLRuntimeException("@" + annotation.getClass().getSimpleName() + " Either the sql or value attribute must be provided");
+				else if(annotationValue.trim().length()>0 && annotationSql.trim().length()>0)
+					throw new SQLRuntimeException("@" + annotation.getClass().getSimpleName() + " Only the sql or value attribute must be provided");
+				
+				String query=(annotationValue.trim().length()>0)?annotationValue:annotationSql;
+				
 				if(query != null){
 					String methodName = declaredMethods[i].getName();
 					String methodReturnType = declaredMethods[i].getReturnType().getName();
@@ -106,7 +117,7 @@ public class JdkGenerator implements QueryObjectGenerator {
 					
 					sb.append("){").append(cr);
 					
-					if(isSelect){
+					if(annotation instanceof Select){
 						sb.append(tb).append(tb).append("return org.resurged.QueryEngine.executeQuery(" + methodReturnTypeGenericTypes.get(0) + ".class, con, \"" + query + "\", " + forwardArgs.toString() + ");").append(cr);
 					}else{
 						sb.append(tb).append(tb).append("return org.resurged.QueryEngine.executeUpdate(con, \"" + query + "\", " + forwardArgs.toString() + ");").append(cr);
