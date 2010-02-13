@@ -91,7 +91,7 @@ public class AsmAdapter extends ClassAdapter {
 		MethodVisitor mv = cv.visitMethod(Opcodes.ACC_PUBLIC, name, desc, signature, exceptions);
 		
 //		AnnotationVisitor av = mv.visitParameterAnnotation("org/resurged/jdbc/Update", "java/lang/String", true);
-//		System.out.println(av);
+//		Log.info(this, av);
 //		mv.visitParameterAnnotation(arg0, arg1, arg2)
 //		mv.visitAnnotationDefault()
 		

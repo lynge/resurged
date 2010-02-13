@@ -3,12 +3,13 @@ package basic;
 import java.sql.Connection;
 import java.sql.DriverManager;
 
-import junit.framework.TestCase;
+import junit.AbstractTestCase;
 
+import org.resurged.Log;
 import org.resurged.QueryObjectFactory;
 import org.resurged.jdbc.DataSet;
 
-public abstract class AbstractDataTypesTestCase extends TestCase {
+public abstract class AbstractDataTypesTestCase extends AbstractTestCase {
 	protected Connection con = null;
 	private DataTypesDao dao;
 	
@@ -20,10 +21,10 @@ public abstract class AbstractDataTypesTestCase extends TestCase {
 		con = DriverManager.getConnection("jdbc:derby:MyDbTest;create=true");
 		
 		dao = QueryObjectFactory.createQueryObject(DataTypesDao.class, con);
-		System.out.println("DataTypesDao loaded");
+		Log.info(this, "DataTypesDao loaded");
 
 		int createResult = dao.createTable();
-		System.out.println("Table create, rows affected: " + createResult);
+		Log.info(this, "Table create, rows affected: " + createResult);
 	}
 
 	@Override
@@ -31,11 +32,11 @@ public abstract class AbstractDataTypesTestCase extends TestCase {
 		super.tearDown();
 
 		int dropResult = dao.dropTable();
-		System.out.println("Table dropped, rows affected: " + dropResult);
+		Log.info(this, "Table dropped, rows affected: " + dropResult);
 
 		if (con != null)
 			con.close();
-		System.out.println("Connection closed");
+		Log.info(this, "Connection closed");
 
 		try {
 			DriverManager.getConnection("jdbc:derby:MyDbTest;shutdown=true");
@@ -45,7 +46,7 @@ public abstract class AbstractDataTypesTestCase extends TestCase {
 	public void testDataTypes(){
 //		int rowsAffected = dao.insert(false, new Boolean(true), (byte)10, new Byte((byte)11), 'r', new Character('R'), (short)20, new Short((short)21), 30, new Integer(31), 40L, new Long(41L), 50.1f, new Float(51.2f), 60.3d, new Double(61.4), "foo", "FOO");
 		int rowsAffected = dao.insert(false, new Boolean(true), (byte)10, new Byte((byte)11), (short)20, new Short((short)21), 30, new Integer(31), 40L, new Long(41L), 50.1f, new Float(51.2f), 60.3d, new Double(61.4), "foo", "FOO");
-		System.out.println("Row inserted, rows affected: " + rowsAffected);
+		Log.info(this, "Row inserted, rows affected: " + rowsAffected);
 
 		assertEquals(1, rowsAffected);
 		
@@ -70,11 +71,11 @@ public abstract class AbstractDataTypesTestCase extends TestCase {
 			assertEquals(new Double(61.4), dto.getDouble2());
 			assertEquals("foo", dto.getString1().trim());
 			assertEquals("FOO", dto.getString2());
-			System.out.println(dto.toString());
+			Log.info(this, dto.toString());
 		}
 
 		rowsAffected -= dao.deleteAll();
-		System.out.println("Row deleted, rows left: " + rowsAffected);
+		Log.info(this, "Row deleted, rows left: " + rowsAffected);
 
 		assertEquals(0, rowsAffected);
 	}

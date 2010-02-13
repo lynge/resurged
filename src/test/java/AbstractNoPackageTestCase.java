@@ -1,11 +1,12 @@
 import java.sql.Connection;
 import java.sql.DriverManager;
 
-import junit.framework.TestCase;
+import junit.AbstractTestCase;
 
+import org.resurged.Log;
 import org.resurged.QueryObjectFactory;
 
-public class AbstractNoPackageTestCase extends TestCase {
+public class AbstractNoPackageTestCase extends AbstractTestCase {
 	private Connection con = null;
 	private NoPackageDao dao;
 
@@ -18,7 +19,7 @@ public class AbstractNoPackageTestCase extends TestCase {
 		dao = QueryObjectFactory.createQueryObject(NoPackageDao.class, con);
 
 		int createResult = dao.createTable();
-		System.out.println("Table create, rows affected: " + createResult);
+		Log.info(this, "Table create, rows affected: " + createResult);
 	}
 
 	@Override
@@ -26,11 +27,11 @@ public class AbstractNoPackageTestCase extends TestCase {
 		super.tearDown();
 
 		int dropResult = dao.dropTable();
-		System.out.println("Table dropped, rows affected: " + dropResult);
+		Log.info(this, "Table dropped, rows affected: " + dropResult);
 
 		if (con != null)
 			con.close();
-		System.out.println("Connection closed");
+		Log.info(this, "Connection closed");
 
 		try {
 			DriverManager.getConnection("jdbc:derby:MyDbTest;shutdown=true");
@@ -42,6 +43,6 @@ public class AbstractNoPackageTestCase extends TestCase {
 	// during runtime compilation, but still a few queries are performed, just in case
 	public void testSimpleQueries() throws Exception {
 		int insertResult = dao.insert(1, "John", "Doe");
-		System.out.println("Row inserted, rows affected: " + insertResult);
+		Log.info(this, "Row inserted, rows affected: " + insertResult);
 	}
 }

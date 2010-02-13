@@ -3,12 +3,13 @@ package basic;
 import java.sql.Connection;
 import java.sql.DriverManager;
 
-import junit.framework.TestCase;
+import junit.AbstractTestCase;
 
+import org.resurged.Log;
 import org.resurged.QueryObjectFactory;
 import org.resurged.jdbc.DataSet;
 
-public abstract class AbstractBasicTestCase extends TestCase{
+public abstract class AbstractBasicTestCase extends AbstractTestCase{
 	protected Connection con = null;
 	private PersonDao dao;
 
@@ -20,10 +21,10 @@ public abstract class AbstractBasicTestCase extends TestCase{
 		con = DriverManager.getConnection("jdbc:derby:MyDbTest;create=true");
 		
 		dao = QueryObjectFactory.createQueryObject(PersonDao.class, con);
-		System.out.println("dao loaded");
+		Log.info(this, "PersonDao loaded");
 
 		int createResult = dao.createTable();
-		System.out.println("Table create, rows affected: " + createResult);
+		Log.info(this, "Table create, rows affected: " + createResult);
 	}
 
 	@Override
@@ -31,11 +32,11 @@ public abstract class AbstractBasicTestCase extends TestCase{
 		super.tearDown();
 
 		int dropResult = dao.dropTable();
-		System.out.println("Table dropped, rows affected: " + dropResult);
+		Log.info(this, "Table dropped, rows affected: " + dropResult);
 
 		if (con != null)
 			con.close();
-		System.out.println("Connection closed");
+		Log.info(this, "Connection closed");
 
 		try {
 			DriverManager.getConnection("jdbc:derby:MyDbTest;shutdown=true");
@@ -44,37 +45,37 @@ public abstract class AbstractBasicTestCase extends TestCase{
 	
 	public void testSimpleQueries() throws Exception {
 		int rowsAffected = dao.insert(1, "Arthur", "Dent");
-		System.out.println("Row inserted, rows affected: " + rowsAffected);
+		Log.info(this, "Row inserted, rows affected: " + rowsAffected);
 
 		rowsAffected += dao.insert(2, "Ford", "Prefect");
-		System.out.println("Row inserted, rows affected: " + rowsAffected);
+		Log.info(this, "Row inserted, rows affected: " + rowsAffected);
 
 		rowsAffected += dao.insert(3, "Ford", "Prefect");
-		System.out.println("Row inserted, rows affected: " + rowsAffected);
+		Log.info(this, "Row inserted, rows affected: " + rowsAffected);
 
 		assertEquals(3, rowsAffected);
 		
 		int affected = dao.update(2, "Zaphod", "Beeblebrox");
-		System.out.println("Row updated, rows affected: " + affected);
+		Log.info(this, "Row updated, rows affected: " + affected);
 		assertEquals(1, affected);
 
 		DataSet<Person> all = dao.getAll();
 		assertEquals(3, all.size());
 		for (Person dto : all) {
-			System.out.println(dto.toString());
+			Log.info(this, dto.toString());
 		}
 
 		DataSet<Person> some = dao.getSome(1);
 		assertEquals(1, some.size());
 		for (Person dto : some) {
-			System.out.println(dto.toString());
+			Log.info(this, dto.toString());
 		}
 
 		rowsAffected -= dao.delete(1);
-		System.out.println("Row deleted, rows left: " + rowsAffected);
+		Log.info(this, "Row deleted, rows left: " + rowsAffected);
 
 		rowsAffected -= dao.deleteAll();
-		System.out.println("Row deleted, rows left: " + rowsAffected);
+		Log.info(this, "Row deleted, rows left: " + rowsAffected);
 
 		assertEquals(0, rowsAffected);
 	}

@@ -14,7 +14,6 @@ import javax.tools.Diagnostic;
 import javax.tools.DiagnosticCollector;
 import javax.tools.JavaFileObject;
 
-import org.resurged.Log;
 import org.resurged.jdbc.BaseQuery;
 import org.resurged.jdbc.QueryObjectGenerator;
 import org.resurged.jdbc.SQLRuntimeException;
@@ -127,7 +126,7 @@ public class JdkGenerator implements QueryObjectGenerator {
 			}
 			sb.append("}");
 			
-			Log.trace(this, "Generated QueryClass:\r\n" + sb.toString());
+//			Log.trace(this, "Generated QueryClass:\r\n" + sb.toString());
 			
 			CharSequenceCompiler<T> compiler = new CharSequenceCompiler<T>(this.getClass().getClassLoader(), null);
 			final DiagnosticCollector<JavaFileObject> errs = new DiagnosticCollector<JavaFileObject>();
@@ -149,7 +148,7 @@ public class JdkGenerator implements QueryObjectGenerator {
 		for (Diagnostic<? extends JavaFileObject> diagnostic : diagnostics.getDiagnostics()) {
 			msgs.append(diagnostic.getMessage(null)).append("\n");
 		}
-		System.out.println(msgs.toString());
+//		Log.info(JdkGenerator.class, msgs.toString());
 
 	}
 }

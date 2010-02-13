@@ -5,6 +5,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
 
+import org.resurged.Log;
 import org.resurged.jdbc.ResultColumn;
 
 
@@ -78,7 +79,7 @@ class FieldMarshaller{
 		if(!accessible)
 			field.setAccessible(true);
 		
-		System.out.println("Geting " + fieldName);
+		Log.trace(this, "Geting " + fieldName);
 		Object value = rs.getObject(fieldName);
 		if(value!=null && value instanceof Integer &&(field.getType()==Byte.TYPE || field.getType()==Byte.class))
 			field.set(o, ((Integer)value).byteValue());
