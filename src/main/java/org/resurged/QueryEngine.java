@@ -13,7 +13,7 @@ import org.resurged.marshalling.MarshallingFactory;
 public class QueryEngine {
 	
 	public static <L> DataSet<L> executeQuery(Class<L> returnType, Connection con, String query) throws SQLRuntimeException {
-		Log.debug(QueryEngine.class, "executeQuery(" + returnType + ", " + con + ", " + query + ")");
+		Log.debug(QueryEngine.class, "executeQuery(" + query + ")");
 		PreparedStatement stmt = null;
 		try {
 			stmt = con.prepareStatement(query);
@@ -32,7 +32,7 @@ public class QueryEngine {
 	}
 
 	public static <L> DataSet<L> executeQuery(Class<L> returnType, Connection con, String query, Object[] params) {
-		Log.debug(QueryEngine.class, "executeQuery(" + returnType + ", " + con + ", " + query + ", " + params + ")");
+		Log.debug(QueryEngine.class, "executeQuery(" + query + ", " + params + ")");
 		
 		if(params.length == 0)
 			return executeQuery(returnType, con, query);
@@ -60,7 +60,7 @@ public class QueryEngine {
 	}
 
 	public static int executeUpdate(Connection con, String query) throws SQLRuntimeException {
-		Log.debug(QueryEngine.class, "executeUpdate(" + con + ", " + query + ")");
+		Log.debug(QueryEngine.class, "executeUpdate(" + query + ")");
 		PreparedStatement stmt = null;
 		try {
 			stmt = con.prepareStatement(query);
@@ -79,7 +79,7 @@ public class QueryEngine {
 	}
 
 	public static int executeUpdate(Connection con, String query, Object[] params) {
-		Log.info(QueryEngine.class, "executeUpdate(" + con + ", " + query + ", " + params + ")");
+		Log.info(QueryEngine.class, "executeUpdate(" + query + ", " + params + ")");
 		if(params.length == 0)
 			return executeUpdate(con, query);
 		
@@ -185,6 +185,10 @@ class ParameterizedQuery {
 						stmt.setNull(i + 1, sqlType);
 					} else {
 						Log.info(this, params[idx].toString());
+						
+						if(params[idx] instanceof java.util.Date)
+							params[idx]=new java.sql.Date(((java.util.Date)params[idx]).getTime());
+						
 						int sqlType = getParameterType(idx);
 						if (sqlType != UNDEFINED_SQL_TYPE)
 							stmt.setObject(i + 1, params[idx], sqlType);
