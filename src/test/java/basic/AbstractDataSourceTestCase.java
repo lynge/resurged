@@ -1,16 +1,15 @@
 package basic;
 
-import java.sql.Connection;
 import java.sql.DriverManager;
 
 import junit.AbstractTestCase;
 
+import org.apache.derby.jdbc.EmbeddedDataSource40;
 import org.resurged.QueryObjectFactory;
 import org.resurged.impl.Log;
 import org.resurged.jdbc.DataSet;
 
-public abstract class AbstractBasicTestCase extends AbstractTestCase{
-	protected Connection con = null;
+public abstract class AbstractDataSourceTestCase extends AbstractTestCase{
 	private PersonDao dao;
 	
 	@Override
@@ -18,10 +17,13 @@ public abstract class AbstractBasicTestCase extends AbstractTestCase{
 		super.setUp();
 
 		Class.forName("org.apache.derby.jdbc.EmbeddedDriver").newInstance();
-		con = DriverManager.getConnection("jdbc:derby:MyDbTest;create=true");
-		
-		dao = QueryObjectFactory.createQueryObject(PersonDao.class, con, configuration);
-		Log.info(this, "PersonDao loaded");
+//		con = DriverManager.getConnection("jdbc:derby:MyDbTest;create=true");
+		EmbeddedDataSource40 ds = new EmbeddedDataSource40(); 
+        ds.setDatabaseName("MyDbTest;create=true");
+        ds.setCreateDatabase("create");
+        
+		dao = QueryObjectFactory.createQueryObject(PersonDao.class, ds, configuration);
+		Log.info(this, "PersonDao loaded: " + dao);
 
 		int createResult = dao.createTable();
 		Log.info(this, "Table create, rows affected: " + createResult);
@@ -33,10 +35,6 @@ public abstract class AbstractBasicTestCase extends AbstractTestCase{
 
 		int dropResult = dao.dropTable();
 		Log.info(this, "Table dropped, rows affected: " + dropResult);
-
-		if (con != null)
-			con.close();
-		Log.info(this, "Connection closed");
 
 		try {
 			DriverManager.getConnection("jdbc:derby:MyDbTest;shutdown=true");

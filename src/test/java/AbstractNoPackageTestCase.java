@@ -3,8 +3,8 @@ import java.sql.DriverManager;
 
 import junit.AbstractTestCase;
 
-import org.resurged.Log;
 import org.resurged.QueryObjectFactory;
+import org.resurged.impl.Log;
 
 public class AbstractNoPackageTestCase extends AbstractTestCase {
 	private Connection con = null;
@@ -16,7 +16,7 @@ public class AbstractNoPackageTestCase extends AbstractTestCase {
 
 		Class.forName("org.apache.derby.jdbc.EmbeddedDriver").newInstance();
 		con = DriverManager.getConnection("jdbc:derby:MyDbTest;create=true");
-		dao = QueryObjectFactory.createQueryObject(NoPackageDao.class, con);
+		dao = QueryObjectFactory.createQueryObject(NoPackageDao.class, con, configuration);
 
 		int createResult = dao.createTable();
 		Log.info(this, "Table create, rows affected: " + createResult);

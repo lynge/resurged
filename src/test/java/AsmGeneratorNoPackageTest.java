@@ -1,10 +1,9 @@
 
 
-import org.resurged.QueryObjectFactory;
-import org.resurged.classgen.asm.AsmGenerator;
+import org.resurged.impl.classgen.asm.AsmGenerator;
 
 public class AsmGeneratorNoPackageTest extends AbstractNoPackageTestCase {
 	public AsmGeneratorNoPackageTest(){
-		QueryObjectFactory.setGenerator(new AsmGenerator());
+		configuration.setGenerator(new AsmGenerator());
 	}
 }

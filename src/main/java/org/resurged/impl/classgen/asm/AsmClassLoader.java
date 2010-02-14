@@ -1,4 +1,4 @@
-package org.resurged.classgen.asm;
+package org.resurged.impl.classgen.asm;
 public class AsmClassLoader<T> extends ClassLoader {
 	@SuppressWarnings("unchecked")
 	public Class<T> defineClass(String name, byte[] b) {

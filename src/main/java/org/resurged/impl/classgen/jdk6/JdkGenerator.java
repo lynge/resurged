@@ -1,4 +1,4 @@
-package org.resurged.classgen.jdk6;
+package org.resurged.impl.classgen.jdk6;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
@@ -23,23 +23,29 @@ import org.resurged.jdbc.Update;
 public class JdkGenerator implements QueryObjectGenerator {
 
 	@Override
-	public <T extends BaseQuery> T createQueryObject(Class<T> ifc, DataSource ds)
-			throws SQLException {
-		return null;
+	public <T extends BaseQuery> T createQueryObject(Class<T> ifc, DataSource ds) throws SQLException {
+		return createQueryObject(ifc, (Object)ds, DataSource.class);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public <T extends BaseQuery> T createQueryObject(Class<T> ifc, Connection con) throws SQLException {
+		return createQueryObject(ifc, (Object)con, Connection.class);
+	}
+	
+	public <T extends BaseQuery> T createQueryObject(Class<T> ifc, Object o, Class<?> t) throws SQLException {
 		String cr = "\r\n", tb="\t";
 		try {
 			StringBuilder sb = new StringBuilder();
 			if(ifc.getPackage() != null)
 				sb.append("package ").append(ifc.getPackage().getName()).append(";").append(cr);
-			sb.append("public class ").append(ifc.getSimpleName()).append("Resurged implements ").append(ifc.getName()).append(" {").append(cr);
-			sb.append(tb).append("private final java.sql.Connection con;").append(cr);
+			sb.append("public class ").append(ifc.getSimpleName()).append("Resurged extends org.resurged.impl.AbstractBaseQuery implements ").append(ifc.getName()).append(" {").append(cr);
+			
 			sb.append(tb).append("public ").append(ifc.getSimpleName()).append("Resurged(java.sql.Connection con){").append(cr);
-			sb.append(tb).append(tb).append("this.con=con;").append(cr);
+			sb.append(tb).append(tb).append("super(con);").append(cr);
+			sb.append(tb).append("}").append(cr);
+
+			sb.append(tb).append("public ").append(ifc.getSimpleName()).append("Resurged(javax.sql.DataSource ds){").append(cr);
+			sb.append(tb).append(tb).append("super(ds);").append(cr);
 			sb.append(tb).append("}").append(cr);
 			
 			Method[] declaredMethods = ifc.getDeclaredMethods();
@@ -75,7 +81,7 @@ public class JdkGenerator implements QueryObjectGenerator {
 					    ParameterizedType type = (ParameterizedType) returnType;
 					    Type[] typeArguments = type.getActualTypeArguments();
 					    for(Type typeArgument : typeArguments){
-					        Class typeArgClass = (Class) typeArgument;
+					        Class<?> typeArgClass = (Class<?>) typeArgument;
 					        methodReturnTypeGenericTypes.add(typeArgClass.getName());
 					    }
 					}
@@ -117,9 +123,9 @@ public class JdkGenerator implements QueryObjectGenerator {
 					sb.append("){").append(cr);
 					
 					if(annotation instanceof Select){
-						sb.append(tb).append(tb).append("return org.resurged.QueryEngine.executeQuery(" + methodReturnTypeGenericTypes.get(0) + ".class, con, \"" + query + "\", " + forwardArgs.toString() + ");").append(cr);
+						sb.append(tb).append(tb).append("return executeQuery(" + methodReturnTypeGenericTypes.get(0) + ".class, \"" + query + "\", " + forwardArgs.toString() + ");").append(cr);
 					}else{
-						sb.append(tb).append(tb).append("return org.resurged.QueryEngine.executeUpdate(con, \"" + query + "\", " + forwardArgs.toString() + ");").append(cr);
+						sb.append(tb).append(tb).append("return executeUpdate(\"" + query + "\", " + forwardArgs.toString() + ");").append(cr);
 					}
 					sb.append(tb).append("}").append(cr);
 				}
@@ -135,8 +141,8 @@ public class JdkGenerator implements QueryObjectGenerator {
 			Class<T> compiledFunction = compiler.compile(qualifiedName + "Resurged", sb.toString(), errs, new Class<?>[] { Object.class });
 			log(errs);
 
-			Constructor generatedConstructor = compiledFunction.getConstructor(Connection.class);
-			return (T) generatedConstructor.newInstance(con);
+			Constructor<T> generatedConstructor = compiledFunction.getConstructor(t);
+			return (T) generatedConstructor.newInstance(o);
 		}catch (Exception e) {
 			throw new SQLRuntimeException(e);
 		}

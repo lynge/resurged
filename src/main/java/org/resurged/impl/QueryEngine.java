@@ -1,4 +1,4 @@
-package org.resurged;
+package org.resurged.impl;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -6,9 +6,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 
+import org.resurged.impl.marshalling.MarshallingFactory;
 import org.resurged.jdbc.DataSet;
 import org.resurged.jdbc.SQLRuntimeException;
-import org.resurged.marshalling.MarshallingFactory;
 
 public class QueryEngine {
 	

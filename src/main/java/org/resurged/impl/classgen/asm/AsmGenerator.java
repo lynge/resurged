@@ -1,4 +1,4 @@
-package org.resurged.classgen.asm;
+package org.resurged.impl.classgen.asm;
 
 import java.lang.reflect.Constructor;
 import java.sql.Connection;
@@ -15,11 +15,15 @@ public class AsmGenerator implements QueryObjectGenerator {
 
 	@Override
 	public <T extends BaseQuery> T createQueryObject(Class<T> ifc, DataSource ds) throws SQLException {
-		return null;
+		return createQueryObject(ifc, (Object)ds, DataSource.class);
 	}
 
 	@Override
 	public <T extends BaseQuery> T createQueryObject(Class<T> ifc, Connection con) throws SQLException {
+		return createQueryObject(ifc, (Object)con, Connection.class);
+	}
+	
+	public <T extends BaseQuery> T createQueryObject(Class<T> ifc, Object o, Class<?> type) throws SQLException {
 		try {
 			// new ClassWriter(0) 
 			// Nothing is automatically computed. You have to compute yourself the frames 
@@ -46,8 +50,8 @@ public class AsmGenerator implements QueryObjectGenerator {
 			AsmClassLoader<T> loader = new AsmClassLoader<T>();
 			Class<T> queryObjectClass = loader.defineClass(adapter.getClassName(), queryObjectBytes);
 			
-			Constructor<T> constructor = queryObjectClass.getConstructor(Connection.class);
-			return constructor.newInstance(con);
+			Constructor<T> constructor = queryObjectClass.getConstructor(type);
+			return constructor.newInstance(o);
 		} catch (Exception e) {
 			throw new SQLException(e);
 		}

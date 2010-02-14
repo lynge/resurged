@@ -1,10 +1,9 @@
 
 
-import org.resurged.QueryObjectFactory;
-import org.resurged.classgen.jdk6.JdkGenerator;
+import org.resurged.impl.classgen.jdk6.JdkGenerator;
 
 public class JdkGeneratorNoPackageTest extends AbstractNoPackageTestCase {
 	public JdkGeneratorNoPackageTest(){
-		QueryObjectFactory.setGenerator(new JdkGenerator());
+		configuration.setGenerator(new JdkGenerator());
 	}
 }

@@ -1,4 +1,4 @@
-package org.resurged;
+package org.resurged.impl;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -6,35 +6,35 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public abstract class Log {
-	private static LogStrategy logger=new JavaUtilLogger();
+	private static LogStrategy loggingStrategy=new JavaUtilLogger();
 	
 	public static void trace(Object source, String message){
-		getLogger().trace(source, message);
+		loggingStrategy.trace(source, message);
 	}
 	public static void debug(Object source, String message){
-		getLogger().debug(source, message);
+		loggingStrategy.debug(source, message);
 	}
 	public static void info(Object source, String message){
-		getLogger().info(source, message);
+		loggingStrategy.info(source, message);
 	}
 	public static void warn(Object source, String message){
-		getLogger().warn(source, message);
+		loggingStrategy.warn(source, message);
 	}
 	public static void warn(Object source, String message, Throwable t){
-		getLogger().warn(source, message, t);
+		loggingStrategy.warn(source, message, t);
 	}
 	public static void error(Object source, String message){
-		getLogger().error(source, message);
+		loggingStrategy.error(source, message);
 	}
 	public static void error(Object source, String message, Throwable t){
-		getLogger().error(source, message, t);
+		loggingStrategy.error(source, message, t);
 	}
 
-	public static void setLogger(LogStrategy logger) {
-		Log.logger = logger;
+	public static void setLoggingStrategy(LogStrategy loggingStrategy) {
+		Log.loggingStrategy = loggingStrategy;
 	}
-	public static LogStrategy getLogger() {
-		return logger;
+	public static LogStrategy getLoggingStrategy() {
+		return loggingStrategy;
 	}
 
 	public interface LogStrategy{

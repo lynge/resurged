@@ -1,11 +1,11 @@
-package org.resurged.marshalling;
+package org.resurged.impl.marshalling;
 
 import java.lang.reflect.Field;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
 
-import org.resurged.Log;
+import org.resurged.impl.Log;
 import org.resurged.jdbc.ResultColumn;
 
 

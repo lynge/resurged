@@ -1,4 +1,4 @@
-package org.resurged.marshalling;
+package org.resurged.impl.marshalling;
 
 import java.util.HashMap;
 

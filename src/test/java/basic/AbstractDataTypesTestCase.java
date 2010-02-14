@@ -6,8 +6,8 @@ import java.util.Date;
 
 import junit.AbstractTestCase;
 
-import org.resurged.Log;
 import org.resurged.QueryObjectFactory;
+import org.resurged.impl.Log;
 import org.resurged.jdbc.DataSet;
 
 public abstract class AbstractDataTypesTestCase extends AbstractTestCase {
@@ -21,7 +21,7 @@ public abstract class AbstractDataTypesTestCase extends AbstractTestCase {
 		Class.forName("org.apache.derby.jdbc.EmbeddedDriver").newInstance();
 		con = DriverManager.getConnection("jdbc:derby:MyDbTest;create=true");
 		
-		dao = QueryObjectFactory.createQueryObject(DataTypesDao.class, con);
+		dao = QueryObjectFactory.createQueryObject(DataTypesDao.class, con, configuration);
 		Log.info(this, "DataTypesDao loaded");
 
 		int createResult = dao.createTable();

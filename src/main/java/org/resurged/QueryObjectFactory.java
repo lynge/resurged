@@ -5,22 +5,36 @@ import java.sql.SQLException;
 
 import javax.sql.DataSource;
 
-import org.resurged.classgen.jdk6.JdkGenerator;
 import org.resurged.jdbc.BaseQuery;
-import org.resurged.jdbc.QueryObjectGenerator;
 import org.resurged.jdbc.SQLRuntimeException;
 
 public class QueryObjectFactory {
-	private static QueryObjectGenerator generator = new JdkGenerator();
 	private Connection con;
 	private DataSource ds;
+	private Config configuration=new Config();
+	private static Config staticConfiguration=new Config();
 
 	public QueryObjectFactory(Connection con) {
 		this.con = con;
 	}
+	public QueryObjectFactory(Connection con, Config configuration) {
+		this.con = con;
+		this.configuration=configuration;
+	}
 
 	public QueryObjectFactory(DataSource ds) {
 		this.ds = ds;
+	}
+	public QueryObjectFactory(DataSource ds, Config configuration) {
+		this.ds = ds;
+		this.configuration=configuration;
+	}
+
+	public void setConfiguration(Config configuration) {
+		this.configuration = configuration;
+	}
+	public Config getConfiguration() {
+		return configuration;
 	}
 
 	/**
@@ -41,9 +55,9 @@ public class QueryObjectFactory {
 			throws SQLRuntimeException {
 		try {
 			if(con!=null)
-				return getGenerator().createQueryObject(ifc, con);
+				return configuration.getGenerator().createQueryObject(ifc, con);
 			else
-				return getGenerator().createQueryObject(ifc, ds);
+				return configuration.getGenerator().createQueryObject(ifc, ds);
 		} catch (SQLException e) {
 			throw new SQLRuntimeException(e);
 		}
@@ -69,10 +83,13 @@ public class QueryObjectFactory {
 	 * @throws SQLRuntimeException
 	 *             - if a database access error occurs.
 	 */
-	public static <T extends BaseQuery> T createQueryObject(Class<T> ifc,
-			Connection con) throws SQLRuntimeException {
+	public static <T extends BaseQuery> T createQueryObject(Class<T> ifc, Connection con) throws SQLRuntimeException {
+		return createQueryObject(ifc, con, staticConfiguration);
+	}
+	
+	public static <T extends BaseQuery> T createQueryObject(Class<T> ifc, Connection con, Config configuration) throws SQLRuntimeException {
 		try {
-			return getGenerator().createQueryObject(ifc, con);
+			return configuration.getGenerator().createQueryObject(ifc, con);
 		} catch (SQLException e) {
 			throw new SQLRuntimeException(e);
 		}
@@ -88,20 +105,14 @@ public class QueryObjectFactory {
 	 * @return A concrete implementation of a Query interface
 	 * @throws SQLRuntimeException - if a database access error occurs.
 	 */
-	public static <T extends BaseQuery> T createQueryObject(Class<T> ifc,
-			DataSource ds) throws SQLRuntimeException {
+	public static <T extends BaseQuery> T createQueryObject(Class<T> ifc, DataSource ds) throws SQLRuntimeException {
+		return createQueryObject(ifc, ds, staticConfiguration);
+	}
+	public static <T extends BaseQuery> T createQueryObject(Class<T> ifc, DataSource ds, Config configuration) throws SQLRuntimeException {
 		try {
-			return getGenerator().createQueryObject(ifc, ds);
+			return configuration.getGenerator().createQueryObject(ifc, ds);
 		} catch (SQLException e) {
 			throw new SQLRuntimeException(e);
-		}
-	}
-
-	public static void setGenerator(QueryObjectGenerator generator) {
-		QueryObjectFactory.generator = generator;
-	}
-
-	public static QueryObjectGenerator getGenerator() {
-		return generator;
+		} 
 	}
 }

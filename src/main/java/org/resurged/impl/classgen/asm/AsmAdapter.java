@@ -1,4 +1,4 @@
-package org.resurged.classgen.asm;
+package org.resurged.impl.classgen.asm;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -7,7 +7,6 @@ import java.util.HashMap;
 
 import org.objectweb.asm.ClassAdapter;
 import org.objectweb.asm.ClassVisitor;
-import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
@@ -42,24 +41,26 @@ public class AsmAdapter extends ClassAdapter {
 		internalClassName = name + CLASS_SUFFIX;
 		
 		// generate empty class
-		cv.visit(version, Opcodes.ACC_PUBLIC + Opcodes.ACC_SUPER, internalClassName, null, "java/lang/Object", new String[] { name });
-		
-		// generate field
-		FieldVisitor fv = cv.visitField(Opcodes.ACC_PRIVATE + Opcodes.ACC_FINAL, "con", "Ljava/sql/Connection;", null, null);
-		fv.visitEnd();
-		
-		// generate constructor
+		cv.visit(version, Opcodes.ACC_PUBLIC + Opcodes.ACC_SUPER, internalClassName, null, "org/resurged/impl/AbstractBaseQuery", new String[] { name });
+
+		// generate constructors
 		MethodVisitor mv = cv.visitMethod(Opcodes.ACC_PUBLIC, "<init>", "(Ljava/sql/Connection;)V", null, null);
 		mv.visitCode();
 		mv.visitVarInsn(Opcodes.ALOAD, 0);
-		mv.visitMethodInsn(Opcodes.INVOKESPECIAL, "java/lang/Object", "<init>", "()V");
-		mv.visitVarInsn(Opcodes.ALOAD, 0);
 		mv.visitVarInsn(Opcodes.ALOAD, 1);
-		mv.visitFieldInsn(Opcodes.PUTFIELD, internalClassName, "con", "Ljava/sql/Connection;");
+		mv.visitMethodInsn(Opcodes.INVOKESPECIAL, "org/resurged/impl/AbstractBaseQuery", "<init>", "(Ljava/sql/Connection;)V");
 		mv.visitInsn(Opcodes.RETURN);
 		mv.visitMaxs(2, 2);
 		mv.visitEnd();
-
+		
+		MethodVisitor mv2 = cv.visitMethod(Opcodes.ACC_PUBLIC, "<init>", "(Ljavax/sql/DataSource;)V", null, null);
+		mv2.visitCode();
+		mv2.visitVarInsn(Opcodes.ALOAD, 0);
+		mv2.visitVarInsn(Opcodes.ALOAD, 1);
+		mv2.visitMethodInsn(Opcodes.INVOKESPECIAL, "org/resurged/impl/AbstractBaseQuery", "<init>", "(Ljavax/sql/DataSource;)V");
+		mv2.visitInsn(Opcodes.RETURN);
+		mv2.visitMaxs(2, 2);
+		mv2.visitEnd();
 	}
 
 	@Override
@@ -102,21 +103,19 @@ public class AsmAdapter extends ClassAdapter {
 		//// PREPARE OPERANT STACK VALUES ////
 		//////////////////////////////////////
 		
+		// stack.push "this"
+		mv.visitVarInsn(Opcodes.ALOAD, 0);
+		
 		if(annotation instanceof Select){
 			java.lang.reflect.Type returnType = method.getGenericReturnType();
 			if(returnType instanceof ParameterizedType){
 			    ParameterizedType type = (ParameterizedType) returnType;
 			    java.lang.reflect.Type[] typeArguments = type.getActualTypeArguments();
 			    Class<?> typeArgClass = (Class<?>) typeArguments[0];
+				// stack.push generic return type
 			    mv.visitLdcInsn(Type.getType("L" + typeArgClass.getName().replaceAll("\\.", "/") + ";"));
 			}
 		}
-		
-		// stack.push "this"
-		mv.visitVarInsn(Opcodes.ALOAD, 0);
-		
-		// stack.pop "this" and stack.push its "con" field
-		mv.visitFieldInsn(Opcodes.GETFIELD, internalClassName, "con", "Ljava/sql/Connection;");
 		
 		// stack.push the query string
 		mv.visitLdcInsn(query);
@@ -149,9 +148,9 @@ public class AsmAdapter extends ClassAdapter {
 		//////////////////////////////////////
 		
 		if(annotation instanceof Update)
-			mv.visitMethodInsn(Opcodes.INVOKESTATIC, "org/resurged/QueryEngine", "executeUpdate", "(Ljava/sql/Connection;Ljava/lang/String;[Ljava/lang/Object;)I");
+			mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, internalClassName, "executeUpdate", "(Ljava/lang/String;[Ljava/lang/Object;)I");
 		else
-			mv.visitMethodInsn(Opcodes.INVOKESTATIC, "org/resurged/QueryEngine", "executeQuery", "(Ljava/lang/Class;Ljava/sql/Connection;Ljava/lang/String;[Ljava/lang/Object;)Lorg/resurged/jdbc/DataSet;");
+			mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, internalClassName, "executeQuery", "(Ljava/lang/Class;Ljava/lang/String;[Ljava/lang/Object;)Lorg/resurged/jdbc/DataSet;");
 
 		//////////////////////////////////////
 		////        RETURN RESULT         ////
