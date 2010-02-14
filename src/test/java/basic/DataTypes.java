@@ -1,5 +1,7 @@
 package basic;
 
+import java.util.Date;
+
 public class DataTypes {
 	// boolean byte char short int long float double String
 	private boolean boolean1;
@@ -20,6 +22,10 @@ public class DataTypes {
 	private Double double2;
 	private String string1;
 	private String string2;
+	private Date date1;
+	private java.sql.Date date2;
+	private java.sql.Time time1;
+	private java.sql.Timestamp timestamp1;
 	
 	public boolean isBoolean1() {
 		return boolean1;
@@ -129,16 +135,42 @@ public class DataTypes {
 	public String getString2() {
 		return string2;
 	}
+	public void setDate1(Date date1) {
+		this.date1 = date1;
+	}
+	public Date getDate1() {
+		return date1;
+	}
+	public java.sql.Date getDate2() {
+		return date2;
+	}
+	public void setDate2(java.sql.Date date2) {
+		this.date2 = date2;
+	}
+	public java.sql.Time getTime1() {
+		return time1;
+	}
+	public void setTime1(java.sql.Time time1) {
+		this.time1 = time1;
+	}
+	public java.sql.Timestamp getTimestamp1() {
+		return timestamp1;
+	}
+	public void setTimestamp1(java.sql.Timestamp timestamp1) {
+		this.timestamp1 = timestamp1;
+	}
 	
 	@Override
 	public String toString() {
 		return "DataTypes [boolean1=" + boolean1 + ", boolean2=" + boolean2
 				+ ", byte1=" + byte1 + ", byte2=" + byte2 + ", char1=" + char1
-				+ ", char2=" + char2 + ", double1=" + double1 + ", double2="
-				+ double2 + ", float1=" + float1 + ", float2=" + float2
-				+ ", int1=" + int1 + ", int2=" + int2 + ", long1=" + long1
-				+ ", long2=" + long2 + ", short1=" + short1 + ", short2="
-				+ short2 + ", string1=" + string1 + ", string2=" + string2
-				+ "]";
+				+ ", char2=" + char2 + ", date1=" + date1 + ", date2=" + date2
+				+ ", double1=" + double1 + ", double2=" + double2 + ", float1="
+				+ float1 + ", float2=" + float2 + ", int1=" + int1 + ", int2="
+				+ int2 + ", long1=" + long1 + ", long2=" + long2 + ", short1="
+				+ short1 + ", short2=" + short2 + ", string1=" + string1
+				+ ", string2=" + string2 + ", time1=" + time1 + ", timestamp1="
+				+ timestamp1 + "]";
 	}
+	
 }
