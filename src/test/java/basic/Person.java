@@ -3,6 +3,7 @@ package basic;
 import org.resurged.jdbc.ResultColumn;
 
 public class Person {
+	@ResultColumn(name="LAST_NAME")
 	private String lastName;
 	
 	@ResultColumn("FIRST_NAME")

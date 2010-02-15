@@ -7,6 +7,7 @@ import java.util.HashMap;
 
 import org.resurged.impl.Log;
 import org.resurged.jdbc.ResultColumn;
+import org.resurged.jdbc.SQLRuntimeException;
 
 
 
@@ -68,7 +69,15 @@ class FieldMarshaller{
 		
 		if(field.isAnnotationPresent(ResultColumn.class)){
 			ResultColumn annotation = (ResultColumn) field.getAnnotation(ResultColumn.class);
-			fieldName = annotation.value();
+			String annotationValue=annotation.value();
+			String annotationName=annotation.name();
+			
+			if(annotationValue.trim().length()==0 && annotationName.trim().length()==0)
+				throw new SQLRuntimeException("@" + annotation.getClass().getSimpleName() + " Either the name or value attribute must be provided");
+			else if(annotationValue.trim().length()>0 && annotationName.trim().length()>0)
+				throw new SQLRuntimeException("@" + annotation.getClass().getSimpleName() + " Only the name or value attribute must be provided");
+			
+			fieldName=(annotationValue.trim().length()>0)?annotationValue:annotationName;
 		} else {
 			fieldName = field.getName();
 		}
