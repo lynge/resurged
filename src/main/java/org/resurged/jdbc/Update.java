@@ -10,4 +10,5 @@ import java.lang.annotation.Target;
 public @interface Update {
 	String value() default "";
 	String sql() default "";
+	GeneratedKeys keys() default GeneratedKeys.NO_KEYS_RETURNED;
 }
