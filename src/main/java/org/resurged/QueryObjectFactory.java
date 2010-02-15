@@ -55,9 +55,9 @@ public class QueryObjectFactory {
 			throws SQLRuntimeException {
 		try {
 			if(con!=null)
-				return configuration.getGenerator().createQueryObject(ifc, con);
+				return configuration.getBytecodeGenerator().createQueryObject(ifc, con);
 			else
-				return configuration.getGenerator().createQueryObject(ifc, ds);
+				return configuration.getBytecodeGenerator().createQueryObject(ifc, ds);
 		} catch (SQLException e) {
 			throw new SQLRuntimeException(e);
 		}
@@ -89,7 +89,7 @@ public class QueryObjectFactory {
 	
 	public static <T extends BaseQuery> T createQueryObject(Class<T> ifc, Connection con, Config configuration) throws SQLRuntimeException {
 		try {
-			return configuration.getGenerator().createQueryObject(ifc, con);
+			return configuration.getBytecodeGenerator().createQueryObject(ifc, con);
 		} catch (SQLException e) {
 			throw new SQLRuntimeException(e);
 		}
@@ -110,7 +110,7 @@ public class QueryObjectFactory {
 	}
 	public static <T extends BaseQuery> T createQueryObject(Class<T> ifc, DataSource ds, Config configuration) throws SQLRuntimeException {
 		try {
-			return configuration.getGenerator().createQueryObject(ifc, ds);
+			return configuration.getBytecodeGenerator().createQueryObject(ifc, ds);
 		} catch (SQLException e) {
 			throw new SQLRuntimeException(e);
 		} 
