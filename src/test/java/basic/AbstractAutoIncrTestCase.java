@@ -21,7 +21,7 @@ public abstract class AbstractAutoIncrTestCase extends AbstractTestCase{
 		dao = QueryObjectFactory.createQueryObject(PersonDao.class, con, configuration);
 		Log.info(this, "PersonDao loaded");
 
-		int createResult = dao.createTableAutoIncr();
+		int createResult =(useMysql)? dao.createTableAutoIncrMySql() : dao.createTableAutoIncr();
 		Log.info(this, "Table create, rows affected: " + createResult);
 	}
 

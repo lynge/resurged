@@ -12,6 +12,9 @@ public interface PersonDao extends BaseQuery{
 
 	@Update(sql="CREATE TABLE Persons(ID int NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), FIRST_NAME varchar(255), LAST_NAME varchar(255), CONSTRAINT primary_key PRIMARY KEY (id))")
 	public int createTableAutoIncr();
+
+	@Update(sql="CREATE TABLE Persons(ID int NOT NULL AUTO_INCREMENT, FIRST_NAME varchar(255), LAST_NAME varchar(255), UNIQUE (id))")
+	public int createTableAutoIncrMySql();
 	
 	@Update("drop table Persons")
 	public int dropTable();

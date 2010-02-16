@@ -1,12 +1,9 @@
-import java.sql.Connection;
-
 import junit.AbstractTestCase;
 
 import org.resurged.QueryObjectFactory;
 import org.resurged.impl.Log;
 
 public class AbstractNoPackageTestCase extends AbstractTestCase {
-	private Connection con = null;
 	private NoPackageDao dao;
 
 	@Override

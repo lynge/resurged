@@ -1,6 +1,5 @@
 package basic;
 
-import java.sql.Connection;
 import java.util.Date;
 
 import junit.AbstractTestCase;
@@ -10,7 +9,6 @@ import org.resurged.impl.Log;
 import org.resurged.jdbc.DataSet;
 
 public abstract class AbstractDataTypesTestCase extends AbstractTestCase {
-	protected Connection con = null;
 	private DataTypesDao dao;
 	
 	@Override
