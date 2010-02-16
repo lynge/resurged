@@ -1,5 +1,4 @@
 import java.sql.Connection;
-import java.sql.DriverManager;
 
 import junit.AbstractTestCase;
 
@@ -13,9 +12,8 @@ public class AbstractNoPackageTestCase extends AbstractTestCase {
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
-
-		Class.forName("org.apache.derby.jdbc.EmbeddedDriver").newInstance();
-		con = DriverManager.getConnection("jdbc:derby:MyDbTest;create=true");
+		openConnection();
+		
 		dao = QueryObjectFactory.createQueryObject(NoPackageDao.class, con, configuration);
 
 		int createResult = dao.createTable();
@@ -29,14 +27,7 @@ public class AbstractNoPackageTestCase extends AbstractTestCase {
 		int dropResult = dao.dropTable();
 		Log.info(this, "Table dropped, rows affected: " + dropResult);
 
-		if (con != null)
-			con.close();
-		Log.info(this, "Connection closed");
-
-		try {
-			DriverManager.getConnection("jdbc:derby:MyDbTest;shutdown=true");
-		} catch (Exception e) {
-		}
+		closeConnection();
 	}
 
 	// The primary purpose of this test is to ensure no exceptions are thrown

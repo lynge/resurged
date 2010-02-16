@@ -17,7 +17,6 @@ public abstract class AbstractDataSourceTestCase extends AbstractTestCase{
 		super.setUp();
 
 		Class.forName("org.apache.derby.jdbc.EmbeddedDriver").newInstance();
-//		con = DriverManager.getConnection("jdbc:derby:MyDbTest;create=true");
 		EmbeddedDataSource40 ds = new EmbeddedDataSource40(); 
         ds.setDatabaseName("MyDbTest;create=true");
         ds.setCreateDatabase("create");

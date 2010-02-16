@@ -1,7 +1,6 @@
 package basic;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.util.Date;
 
 import junit.AbstractTestCase;
@@ -17,9 +16,7 @@ public abstract class AbstractDataTypesTestCase extends AbstractTestCase {
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
-
-		Class.forName("org.apache.derby.jdbc.EmbeddedDriver").newInstance();
-		con = DriverManager.getConnection("jdbc:derby:MyDbTest;create=true");
+		openConnection();
 		
 		dao = QueryObjectFactory.createQueryObject(DataTypesDao.class, con, configuration);
 		Log.info(this, "DataTypesDao loaded");
@@ -35,13 +32,7 @@ public abstract class AbstractDataTypesTestCase extends AbstractTestCase {
 		int dropResult = dao.dropTable();
 		Log.info(this, "Table dropped, rows affected: " + dropResult);
 
-		if (con != null)
-			con.close();
-		Log.info(this, "Connection closed");
-
-		try {
-			DriverManager.getConnection("jdbc:derby:MyDbTest;shutdown=true");
-		} catch (Exception e) {}
+		closeConnection();
 	}
 	
 	public void testDataTypes(){
