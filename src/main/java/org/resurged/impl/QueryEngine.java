@@ -11,31 +11,9 @@ import org.resurged.jdbc.DataSet;
 import org.resurged.jdbc.SQLRuntimeException;
 
 public class QueryEngine {
-	
-	public static <L> DataSet<L> executeQuery(Class<L> returnType, Connection con, String query) throws SQLRuntimeException {
-		Log.debug(QueryEngine.class, "executeQuery(" + query + ")");
-		PreparedStatement stmt = null;
-		try {
-			stmt = con.prepareStatement(query);
-			ResultSet srs = stmt.executeQuery();
-			return new DataSetImpl<L>(srs, MarshallingFactory.getMarshaller(returnType));
-		} catch (SQLException e) {
-			throw new SQLRuntimeException(e);
-		} finally {
-			try {
-				if (stmt != null)
-					stmt.close();
-			} catch (SQLException e) {
-				throw new SQLRuntimeException(e);
-			}
-		}
-	}
 
 	public static <L> DataSet<L> executeQuery(Class<L> returnType, Connection con, String query, Object[] params) {
 		Log.debug(QueryEngine.class, "executeQuery(" + query + ", " + params + ")");
-		
-		if(params.length == 0)
-			return executeQuery(returnType, con, query);
 		
 		PreparedStatement stmt = null;
 		try {
@@ -58,14 +36,20 @@ public class QueryEngine {
 			}
 		}
 	}
+	
+	public static <L> DataSet<L> executeUpdate(Class<L> returnType, Connection con, String query, Object[] params) {
+		Log.info(QueryEngine.class, "executeUpdate(" + query + ", " + params + ")");
 
-	public static int executeUpdate(Connection con, String query) throws SQLRuntimeException {
-		Log.debug(QueryEngine.class, "executeUpdate(" + query + ")");
 		PreparedStatement stmt = null;
 		try {
-			stmt = con.prepareStatement(query);
-			int result = stmt.executeUpdate();
-			return result;
+			ParameterizedQuery pq = new ParameterizedQuery();
+			String sql = pq.getParsedSQL(query);
+			
+			stmt = con.prepareStatement(sql);
+			pq.applyParameters(stmt, params);
+			
+//			int result = stmt.executeUpdate();
+			return null;
 		} catch (SQLException e) {
 			throw new SQLRuntimeException(e);
 		} finally {
@@ -80,8 +64,6 @@ public class QueryEngine {
 
 	public static int executeUpdate(Connection con, String query, Object[] params) {
 		Log.info(QueryEngine.class, "executeUpdate(" + query + ", " + params + ")");
-		if(params.length == 0)
-			return executeUpdate(con, query);
 		
 		PreparedStatement stmt = null;
 		try {
@@ -104,7 +86,6 @@ public class QueryEngine {
 			}
 		}
 	}
-
 }
 
 class ParameterizedQuery {

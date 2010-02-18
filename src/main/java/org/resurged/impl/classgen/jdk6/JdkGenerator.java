@@ -1,6 +1,5 @@
 package org.resurged.impl.classgen.jdk6;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
@@ -32,7 +31,7 @@ public class JdkGenerator implements QueryObjectGenerator {
 		return createQueryObject(ifc, (Object)con, Connection.class);
 	}
 	
-	public <T extends BaseQuery> T createQueryObject(Class<T> ifc, Object o, Class<?> t) throws SQLException {
+	private <T extends BaseQuery> T createQueryObject(Class<T> ifc, Object o, Class<?> t) throws SQLException {
 		String cr = "\r\n", tb="\t";
 		try {
 			StringBuilder sb = new StringBuilder();
@@ -50,60 +49,71 @@ public class JdkGenerator implements QueryObjectGenerator {
 			
 			Method[] declaredMethods = ifc.getDeclaredMethods();
 			for (int i = 0; i < declaredMethods.length; i++) {
-				Annotation annotation=null;
-				String annotationValue="", annotationSql="";
-				
-				if(declaredMethods[i].isAnnotationPresent(Select.class)){
-					annotation=declaredMethods[i].getAnnotation(Select.class);
-					annotationValue=((Select)annotation).value();
-					annotationSql=((Select)annotation).sql();
-				}else if(declaredMethods[i].isAnnotationPresent(Update.class)){
-					annotation=declaredMethods[i].getAnnotation(Update.class);
-					annotationValue=((Update)annotation).value();
-					annotationSql=((Update)annotation).sql();
-				}
-				
-				if(annotationValue.trim().length()==0 && annotationSql.trim().length()==0)
-					throw new SQLRuntimeException("@" + annotation.getClass().getSimpleName() + " Either the sql or value attribute must be provided");
-				else if(annotationValue.trim().length()>0 && annotationSql.trim().length()>0)
-					throw new SQLRuntimeException("@" + annotation.getClass().getSimpleName() + " Only the sql or value attribute must be provided");
-				
-				String query=(annotationValue.trim().length()>0)?annotationValue:annotationSql;
-				
-				if(query != null){
+				String annotationName = null;
+				if(declaredMethods[i].isAnnotationPresent(Select.class))
+					annotationName="org.resurged.jdbc.Select.class";
+				else if(declaredMethods[i].isAnnotationPresent(Update.class))
+					annotationName="org.resurged.jdbc.Update.class";
+
+				if(annotationName != null){
+					sb.append(tb).append("public ");
+					
 					String methodName = declaredMethods[i].getName();
-					String methodReturnType = declaredMethods[i].getReturnType().getName();
-					ArrayList<String> methodReturnTypeGenericTypes = new ArrayList<String>();
-					ArrayList<String> methodParameters = new ArrayList<String>();
+					StringBuilder castTo = new StringBuilder();
 					
-					Type returnType = declaredMethods[i].getGenericReturnType();
-					if(returnType instanceof ParameterizedType){
-					    ParameterizedType type = (ParameterizedType) returnType;
-					    Type[] typeArguments = type.getActualTypeArguments();
-					    for(Type typeArgument : typeArguments){
-					        Class<?> typeArgClass = (Class<?>) typeArgument;
-					        methodReturnTypeGenericTypes.add(typeArgClass.getName());
-					    }
-					}
-					
-					Class<?>[] parameterTypes = declaredMethods[i].getParameterTypes();
-					for (int j = 0; j < parameterTypes.length; j++) {
-						methodParameters.add(parameterTypes[j].getName());
-					}
-					
-					sb.append(tb).append("public ").append(methodReturnType);
-					
-					if(methodReturnTypeGenericTypes.size() > 0){
-						sb.append("<");
-						for (int j = 0; j < methodReturnTypeGenericTypes.size(); j++) {
-							sb.append(methodReturnTypeGenericTypes.get(j)).append(",");
+					if(declaredMethods[i].getReturnType().isPrimitive()){
+						castTo.append(Integer.class.getName());
+						sb.append("int");
+					} else {
+						castTo.append(declaredMethods[i].getReturnType().getName()).append('<');
+						
+						Type returnType = declaredMethods[i].getGenericReturnType();
+						if(returnType instanceof ParameterizedType){
+						    ParameterizedType type = (ParameterizedType) returnType;
+						    Type[] typeArguments = type.getActualTypeArguments();
+						    for(Type typeArgument : typeArguments){
+						        Class<?> typeArgClass = (Class<?>) typeArgument;
+						        castTo.append(typeArgClass.getName()).append('>');
+						        break;
+						    }
 						}
-						if(sb.charAt(sb.length()-1)==',')
-							sb.deleteCharAt(sb.length()-1);
-						sb.append(">");
+						sb.append(castTo.toString());
 					}
 					
 					sb.append(" ").append(methodName).append("(");
+
+					StringBuilder forwardArgTypes = new StringBuilder();
+					forwardArgTypes.append("new Class[]{");
+					
+					ArrayList<String> methodParameters = new ArrayList<String>();
+					Class<?>[] parameterTypes = declaredMethods[i].getParameterTypes();
+					for (int j = 0; j < parameterTypes.length; j++) {
+						methodParameters.add(parameterTypes[j].getName());
+						if(!parameterTypes[j].isPrimitive())
+							forwardArgTypes.append(parameterTypes[j].getName()).append(".class,");
+						else {
+							String type = parameterTypes[j].getName();
+							if(type.equals("byte"))
+								forwardArgTypes.append("Byte.TYPE,");
+							else if(type.equals("short"))
+								forwardArgTypes.append("Short.TYPE,");
+							else if(type.equals("int"))
+								forwardArgTypes.append("Integer.TYPE,");
+							else if(type.equals("long"))
+								forwardArgTypes.append("Long.TYPE,");
+							else if(type.equals("float"))
+								forwardArgTypes.append("Float.TYPE,");
+							else if(type.equals("double"))
+								forwardArgTypes.append("Double.TYPE,");
+							else if(type.equals("boolean"))
+								forwardArgTypes.append("Boolean.TYPE,");
+							else if(type.equals("char"))
+								forwardArgTypes.append("Char.TYPE,");
+						}
+					}
+					if(forwardArgTypes.charAt(forwardArgTypes.length()-1)==',')
+						forwardArgTypes.deleteCharAt(forwardArgTypes.length()-1);
+					forwardArgTypes.append("}");
 					
 					StringBuilder forwardArgs = new StringBuilder();
 					forwardArgs.append("new Object[]{");
@@ -122,11 +132,8 @@ public class JdkGenerator implements QueryObjectGenerator {
 					
 					sb.append("){").append(cr);
 					
-					if(annotation instanceof Select){
-						sb.append(tb).append(tb).append("return executeQuery(" + methodReturnTypeGenericTypes.get(0) + ".class, \"" + query + "\", " + forwardArgs.toString() + ");").append(cr);
-					}else{
-						sb.append(tb).append(tb).append("return executeUpdate(\"" + query + "\", " + forwardArgs.toString() + ");").append(cr);
-					}
+					sb.append(tb).append(tb).append("return (").append(castTo.toString()).append(") executeQuery(" + ifc.getName() + ".class, " + annotationName + ", \"" + methodName + "\", " + forwardArgTypes.toString() + ", " + forwardArgs.toString() + ");").append(cr);
+					
 					sb.append(tb).append("}").append(cr);
 				}
 			}

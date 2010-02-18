@@ -1,13 +1,18 @@
 package org.resurged.impl;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.sql.Connection;
 import java.sql.SQLException;
 
 import javax.sql.DataSource;
 
 import org.resurged.jdbc.BaseQuery;
-import org.resurged.jdbc.DataSet;
 import org.resurged.jdbc.SQLRuntimeException;
+import org.resurged.jdbc.Select;
+import org.resurged.jdbc.Update;
 
 public abstract class AbstractBaseQuery implements BaseQuery {
 	private Connection con;
@@ -31,46 +36,60 @@ public abstract class AbstractBaseQuery implements BaseQuery {
 		return con==null && ds==null;
 	}
 
-	protected <L> DataSet<L> executeQuery(Class<L> returnType, String query) throws SQLRuntimeException {
+	protected Object executeQuery(Class<?> interfaceClass, Class<? extends Annotation> annotationClass, String methodName, Class<?>[] parameterTypes, Object[] parameterValues) throws SQLRuntimeException {
 		Connection connection=null;
 		try{
 			connection = getConnection();
-			return QueryEngine.executeQuery(returnType, connection, query);
+			Method method = interfaceClass.getDeclaredMethod(methodName, parameterTypes);
+			Annotation annotation = method.getAnnotation(annotationClass);
+			Class<?> returnType = getReturnType(method);
+			
+			if(annotation instanceof Select)
+				return QueryEngine.executeQuery(returnType, connection, getQuery(annotation), parameterValues);
+			else if(returnType==Integer.TYPE)
+				return QueryEngine.executeUpdate(connection, getQuery(annotation), parameterValues);
+			else
+				return QueryEngine.executeUpdate(returnType, connection, getQuery(annotation), parameterValues);
+		} catch (Exception e) {
+			throw new SQLRuntimeException(e);
 		} finally {
 			if(connection!=null)
 				cleanupConnection(connection);
 		}
 		
 	}
-	protected <L> DataSet<L> executeQuery(Class<L> returnType, String query, Object[] params) {
-		Connection connection=null;
-		try{
-			connection = getConnection();
-			return QueryEngine.executeQuery(returnType, connection, query, params);
-		} finally {
-			if(connection!=null)
-				cleanupConnection(connection);
+
+	private static Class<?> getReturnType(Method method) {
+		Type returnType = method.getGenericReturnType();
+		if(returnType instanceof ParameterizedType){
+		    ParameterizedType type = (ParameterizedType) returnType;
+		    Type[] typeArguments = type.getActualTypeArguments();
+		    for(Type typeArgument : typeArguments){
+		        Class<?> typeArgClass = (Class<?>) typeArgument;
+		        return typeArgClass;
+		    }
+		} else {
+			return method.getReturnType();
 		}
+		throw new SQLRuntimeException("Unable to resolve return type for method " + method.getName());
 	}
-	protected int executeUpdate(String query) throws SQLRuntimeException {
-		Connection connection=null;
-		try{
-			connection = getConnection();
-			return QueryEngine.executeUpdate(connection, query);
-		} finally {
-			if(connection!=null)
-				cleanupConnection(connection);
+	
+	private String getQuery(Annotation annotation) {
+		String annotationValue="", annotationSql="";
+		if(annotation instanceof Select){
+			annotationValue=((Select)annotation).value();
+			annotationSql=((Select)annotation).sql();
+		}else if(annotation instanceof Update){
+			annotationValue=((Update)annotation).value();
+			annotationSql=((Update)annotation).sql();
 		}
-	}
-	protected int executeUpdate(String query, Object[] params) {
-		Connection connection=null;
-		try{
-			connection = getConnection();
-			return QueryEngine.executeUpdate(connection, query, params);
-		} finally {
-			if(connection!=null)
-				cleanupConnection(connection);
-		}
+		
+		if(annotationValue.trim().length()==0 && annotationSql.trim().length()==0)
+			throw new SQLRuntimeException("@" + annotation.getClass().getSimpleName() + " Either the sql or value attribute must be provided");
+		else if(annotationValue.trim().length()>0 && annotationSql.trim().length()>0)
+			throw new SQLRuntimeException("@" + annotation.getClass().getSimpleName() + " Only the sql or value attribute must be provided");
+		
+		return (annotationValue.trim().length()>0)?annotationValue:annotationSql;
 	}
 	
 	private Connection getConnection() {
