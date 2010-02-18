@@ -4,7 +4,6 @@ import junit.AbstractTestCase;
 
 import org.resurged.QueryObjectFactory;
 import org.resurged.impl.Log;
-import org.resurged.jdbc.DataSet;
 
 public abstract class AbstractAutoIncrTestCase extends AbstractTestCase{
 	private PersonDao dao;
