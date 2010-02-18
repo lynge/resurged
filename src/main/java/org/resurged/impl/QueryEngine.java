@@ -1,14 +1,19 @@
 package org.resurged.impl;
 
+import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.sql.Types;
 
 import org.resurged.impl.marshalling.MarshallingFactory;
 import org.resurged.jdbc.DataSet;
+import org.resurged.jdbc.GeneratedKeys;
 import org.resurged.jdbc.SQLRuntimeException;
+import org.resurged.jdbc.Update;
 
 public class QueryEngine {
 
@@ -37,19 +42,66 @@ public class QueryEngine {
 		}
 	}
 	
-	public static <L> DataSet<L> executeUpdate(Class<L> returnType, Connection con, String query, Object[] params) {
+	public static <L> DataSet<L> executeUpdate(Class<L> returnType, Update annotation, Connection con, String query, Object[] params) {
 		Log.info(QueryEngine.class, "executeUpdate(" + query + ", " + params + ")");
+		
+		if(annotation.keys()==GeneratedKeys.NO_KEYS_RETURNED)
+			throw new SQLRuntimeException("Auto generated keys can only be returned, if the QueryInterface method is annotated with GeneratedKeys.RETURNED_KEYS_DRIVER_DEFINED or GeneratedKeys.RETURNED_KEYS_COLUMNS_SPECIFIED");
 
+		try {
+			if(!con.getMetaData().supportsGetGeneratedKeys())
+				throw new SQLRuntimeException("Returning auto generated keys is not supported by the database");
+		} catch (SQLException e) {
+			throw new SQLRuntimeException("A message was thrown while calling getMetaData().supportsGetGeneratedKeys() on the database connection", e);
+		}
+		
 		PreparedStatement stmt = null;
 		try {
 			ParameterizedQuery pq = new ParameterizedQuery();
 			String sql = pq.getParsedSQL(query);
+
+			Field[] keyFields = returnType.getDeclaredFields();
 			
-			stmt = con.prepareStatement(sql);
+			if(annotation.keys()==GeneratedKeys.RETURNED_KEYS_DRIVER_DEFINED)
+				stmt = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+			else{
+				String[] returnKeys = new String[keyFields.length];
+				for (int i = 0; i < keyFields.length; i++) {
+					returnKeys[i]=keyFields[i].getName();
+				}
+				stmt = con.prepareStatement(sql, returnKeys);
+			}
+				
 			pq.applyParameters(stmt, params);
 			
-//			int result = stmt.executeUpdate();
-			return null;
+			stmt.executeUpdate();
+			ResultSet rs = stmt.getGeneratedKeys();
+			
+			return new DataSetImpl<L>(rs, MarshallingFactory.getMarshaller(returnType));
+//			while (keys.next()) {
+//				ResultSetMetaData meta = keys.getMetaData();
+//				int colCount = meta.getColumnCount();
+//				
+//				if(keyFields.length!=colCount)
+//					throw new SQLRuntimeException("Expected number of auto generated keys was " + keyFields.length + ", but actual number of keys was " + colCount);
+//
+//	            L keyObject = returnType.newInstance();
+//	            
+//				for (int i = 1; i <= colCount; i++) {
+//					String key = meta.getColumnName(i);
+//					String type = meta.getColumnClassName(i);
+//		            Object value = keys.getObject(i);
+//		            
+//		            if(colCount==1)
+//		            	keyFields[0].set(keyObject, value);
+//		            else {
+//		            	
+//		            }
+//				}
+//				
+//				return keyObject;
+//			}
+			
 		} catch (SQLException e) {
 			throw new SQLRuntimeException(e);
 		} finally {

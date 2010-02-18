@@ -49,7 +49,7 @@ public abstract class AbstractBaseQuery implements BaseQuery {
 			else if(returnType==Integer.TYPE)
 				return QueryEngine.executeUpdate(connection, getQuery(annotation), parameterValues);
 			else
-				return QueryEngine.executeUpdate(returnType, connection, getQuery(annotation), parameterValues);
+				return QueryEngine.executeUpdate(returnType, (Update)annotation, connection, getQuery(annotation), parameterValues);
 		} catch (Exception e) {
 			throw new SQLRuntimeException(e);
 		} finally {

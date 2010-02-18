@@ -2,6 +2,7 @@ package basic;
 
 import org.resurged.jdbc.BaseQuery;
 import org.resurged.jdbc.DataSet;
+import org.resurged.jdbc.GeneratedKeys;
 import org.resurged.jdbc.Select;
 import org.resurged.jdbc.Update;
 
@@ -24,6 +25,15 @@ public interface PersonDao extends BaseQuery{
 	
 	@Update("INSERT INTO Persons (first_name, last_name) VALUES (?1, ?2)")
 	public int insertAutoIncr(String firstName, String lastName);
+	
+	@Update(sql="INSERT INTO Persons (first_name, last_name) VALUES (?1, ?2)", keys=GeneratedKeys.NO_KEYS_RETURNED)
+	public DataSet<PersonKey> insertReturnKeysNoKeys(String firstName, String lastName);
+	
+	@Update(sql="INSERT INTO Persons (first_name, last_name) VALUES (?1, ?2)", keys=GeneratedKeys.RETURNED_KEYS_DRIVER_DEFINED)
+	public DataSet<PersonKey> insertReturnKeysDriversDefined(String firstName, String lastName);
+	
+	@Update(sql="INSERT INTO Persons (first_name, last_name) VALUES (?1, ?2)", keys=GeneratedKeys.RETURNED_KEYS_COLUMNS_SPECIFIED)
+	public DataSet<PersonKey> insertReturnKeysColSpecified(String firstName, String lastName);
 	
 	@Update("UPDATE Persons SET first_name=?2, last_name=?3 WHERE id=?1")
 	public int update(int id, String firstName, String lastName);
