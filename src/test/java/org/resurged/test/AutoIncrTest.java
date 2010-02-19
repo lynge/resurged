@@ -22,7 +22,7 @@ public class AutoIncrTest extends AbstractTestCase {
     	if(vendor!=MYSQL)
     		return;
     	
-		dao = QueryObjectFactory.createQueryObject(PersonDao.class, con, configuration);
+		dao = QueryObjectFactory.createQueryObject(PersonDao.class, getConnection(), configuration);
 		Log.info(this, "PersonDao loaded");
 
 		int createResult =(vendor==MYSQL)? dao.createTableAutoIncrMySql() : dao.createTableAutoIncr();

@@ -1,6 +1,7 @@
 package org.resurged.impl.marshalling;
 
 import java.lang.reflect.Field;
+import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -125,6 +126,8 @@ class FieldMarshaller{
 			field.set(o, ((Integer)value).shortValue());
 		else if(value!=null && value instanceof Long &&(field.getType()==Integer.TYPE || field.getType()==Integer.class))
 			field.set(o, ((Long)value).intValue());
+		else if(value!=null && value instanceof BigDecimal &&(field.getType()==Integer.TYPE || field.getType()==Integer.class))
+			field.set(o, ((BigDecimal)value).intValue());
 		else if(value!=null && value instanceof Double &&(field.getType()==Float.TYPE || field.getType()==Float.class))
 			field.set(o, ((Double)value).floatValue());
 		else if(value!=null && value instanceof Integer &&(field.getType()==Boolean.TYPE || field.getType()==Boolean.class))

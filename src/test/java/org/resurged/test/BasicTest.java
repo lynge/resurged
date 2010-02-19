@@ -18,7 +18,7 @@ public class BasicTest extends AbstractTestCase {
 	}
 	
 	public void init() throws Exception{
-		dao = QueryObjectFactory.createQueryObject(PersonDao.class, con, configuration);
+		dao = QueryObjectFactory.createQueryObject(PersonDao.class, getConnection(), configuration);
 		Log.info(this, "PersonDao loaded");
 
 		int createResult = dao.createTable();

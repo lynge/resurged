@@ -23,7 +23,7 @@ public class DataTypesTest extends AbstractTestCase {
     	if(vendor!=DERBY)
     		return;
     	
-		dao = QueryObjectFactory.createQueryObject(DataTypesDao.class, con, configuration);
+		dao = QueryObjectFactory.createQueryObject(DataTypesDao.class, getConnection(), configuration);
 		Log.info(this, "DataTypesDao loaded");
 
 		int createResult = dao.createTable();

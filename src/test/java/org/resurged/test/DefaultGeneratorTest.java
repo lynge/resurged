@@ -16,7 +16,7 @@ public class DefaultGeneratorTest extends AbstractTestCase {
 	}
 	
 	public void init() throws Exception{
-		dao = QueryObjectFactory.createQueryObject(PersonDao.class, con);
+		dao = QueryObjectFactory.createQueryObject(PersonDao.class, getConnection());
 		Log.info(this, "PersonDao loaded");
 
 		int createResult = dao.createTable();

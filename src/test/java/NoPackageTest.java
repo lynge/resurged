@@ -14,7 +14,7 @@ public class NoPackageTest extends AbstractTestCase {
 	}
 	
 	public void init() throws Exception{
-		dao = QueryObjectFactory.createQueryObject(NoPackageDao.class, con, configuration);
+		dao = QueryObjectFactory.createQueryObject(NoPackageDao.class, getConnection(), configuration);
 		Log.info(this, "PersonDao loaded");
 
 		int createResult = dao.createTable();

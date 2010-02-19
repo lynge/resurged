@@ -21,8 +21,7 @@ public class DataSourceTest extends AbstractTestCase {
     	if(vendor!=DERBY)
     		return;
     	
-		System.out.println(ds);
-		dao = QueryObjectFactory.createQueryObject(PersonDao.class, ds, configuration);
+		dao = QueryObjectFactory.createQueryObject(PersonDao.class, getDs(), configuration);
 		Log.info(this, "PersonDao loaded");
 
 		int createResult = dao.createTable();

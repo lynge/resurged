@@ -7,7 +7,7 @@ import java.util.Collection;
 
 import javax.sql.DataSource;
 
-import org.apache.derby.jdbc.EmbeddedDataSource40;
+import org.apache.commons.dbcp.BasicDataSource;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.runner.RunWith;
@@ -19,7 +19,14 @@ import org.resurged.impl.classgen.asm.AsmGenerator;
 import org.resurged.impl.classgen.jdk6.JdkGenerator;
 
 @RunWith(Parameterized.class)
-public abstract class AbstractTestCase {
+public abstract class AbstractTestCase { 
+    private static final String[][] CONNECTION_PROPERTIES={
+    	{"org.apache.derby.jdbc.EmbeddedDriver", "jdbc:derby:MyDbTest;create=true", "", ""},
+    	{"com.mysql.jdbc.Driver", "jdbc:mysql://localhost:3306/resurged", "resurged", "resurged"},
+    	{"", "", "", ""},
+    	{"oracle.jdbc.driver.OracleDriver", "jdbc:oracle:thin:@Mlocalhost:1521:resurged", "resurged", "resurged"}
+    };
+    
 	public static final String[] VENDOR_NAMES={"DERBY","MYSQL","POSTGRES","ORACLE"};
 	public static final int DERBY=0, MYSQL=1, POSTGRES=2, ORACLE=3;
 	
@@ -33,8 +40,8 @@ public abstract class AbstractTestCase {
 	protected int vendor;
 	
 	protected Config configuration=new Config();
-	protected Connection con = null;
-	protected DataSource ds = null;
+	private Connection con = null;
+	private DataSource ds = null;
 	
 	public abstract void init() throws Exception;
     public abstract void cleanup() throws Exception;
@@ -57,25 +64,7 @@ public abstract class AbstractTestCase {
 				configuration.setGenerator(new JdkGenerator());
 				break;
 		}
-		
-		switch (vendor) {
-			case MYSQL:
-				Class.forName("com.mysql.jdbc.Driver");
-				con = DriverManager.getConnection("jdbc:mysql://localhost:3306/resurged","root", "no1knows");
-				Log.info(this, "MySql connection opened");
-				break;
-			default:
-				Class.forName("org.apache.derby.jdbc.EmbeddedDriver").newInstance();
-				con = DriverManager.getConnection("jdbc:derby:MyDbTest;create=true");
-				Log.info(this, "Derby connection opened");
-
-				ds = new EmbeddedDataSource40(); 
-				EmbeddedDataSource40 derbyDs = (EmbeddedDataSource40) ds;
-				derbyDs.setDatabaseName("MyDbTest;create=true");
-				derbyDs.setCreateDatabase("create");
-				Log.info(this, "Derby datasource opened");
-				break;
-		}
+    	
 		init();
     }
     
@@ -104,5 +93,27 @@ public abstract class AbstractTestCase {
 		}
         return data;
     }
+    
+    public Connection getConnection() throws Exception{
+		if(con==null){
+			Class.forName(CONNECTION_PROPERTIES[vendor][0]);
+			con = DriverManager.getConnection(CONNECTION_PROPERTIES[vendor][1],CONNECTION_PROPERTIES[vendor][2], CONNECTION_PROPERTIES[vendor][3]);
+			Log.info(this, VENDOR_NAMES[vendor] + " connection opened");
+		}
+    	return con;
+    }
+    
+	public DataSource getDs() {
+		if(ds==null){
+			BasicDataSource basicDs = new BasicDataSource();
+			basicDs.setDriverClassName(CONNECTION_PROPERTIES[vendor][0]);
+			basicDs.setUrl(CONNECTION_PROPERTIES[vendor][1]);
+			basicDs.setUsername(CONNECTION_PROPERTIES[vendor][2]);
+			basicDs.setPassword(CONNECTION_PROPERTIES[vendor][3]);
+			ds=basicDs;
+			Log.info(this, "DataSource loaded");
+		}
+		return ds;
+	}
 
 }
