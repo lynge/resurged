@@ -8,10 +8,10 @@ import javax.sql.DataSource;
 
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
+import org.resurged.impl.classgen.AbstractGenerator;
 import org.resurged.jdbc.BaseQuery;
-import org.resurged.jdbc.QueryObjectGenerator;
 
-public class AsmGenerator implements QueryObjectGenerator {
+public class AsmGenerator extends AbstractGenerator {
 
 	@Override
 	public <T extends BaseQuery> T createQueryObject(Class<T> ifc, DataSource ds) throws SQLException {
@@ -40,11 +40,18 @@ public class AsmGenerator implements QueryObjectGenerator {
 			ClassWriter queryObjectWriter = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
 			AsmAdapter adapter = new AsmAdapter(queryObjectWriter, ifc);
 
+//			Class klass = ifc.getClass();
+//			while (klass != BaseQuery.class){
+//				System.out.println(klass.getName());
+//				Class[] interfaces = klass.getInterfaces();
+//				for (int i = 0; i < interfaces.length; i++) {
+//					if(interfaces[i]!=BaseQuery.class)
+//						;
+//				}
+//			}
 			byte[] queryInterfaceBytes = new ClassReader(ifc.getName()).b;
 			ClassReader queryInterfaceReader = new ClassReader(queryInterfaceBytes);
 			queryInterfaceReader.accept(adapter, 0);
-//			CheckClassAdapter cca = new CheckClassAdapter(queryObjectWriter);
-//			TraceClassVisitor cv = new TraceClassVisitor(cca, printWriter);
 			byte[] queryObjectBytes = queryObjectWriter.toByteArray();
 			
 			AsmClassLoader<T> loader = new AsmClassLoader<T>();

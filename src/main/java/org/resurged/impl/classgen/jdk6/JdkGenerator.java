@@ -13,13 +13,13 @@ import javax.tools.Diagnostic;
 import javax.tools.DiagnosticCollector;
 import javax.tools.JavaFileObject;
 
+import org.resurged.impl.classgen.AbstractGenerator;
 import org.resurged.jdbc.BaseQuery;
-import org.resurged.jdbc.QueryObjectGenerator;
 import org.resurged.jdbc.SQLRuntimeException;
 import org.resurged.jdbc.Select;
 import org.resurged.jdbc.Update;
 
-public class JdkGenerator implements QueryObjectGenerator {
+public class JdkGenerator extends AbstractGenerator {
 
 	@Override
 	public <T extends BaseQuery> T createQueryObject(Class<T> ifc, DataSource ds) throws SQLException {
@@ -47,7 +47,7 @@ public class JdkGenerator implements QueryObjectGenerator {
 			sb.append(tb).append(tb).append("super(ds);").append(cr);
 			sb.append(tb).append("}").append(cr);
 			
-			Method[] declaredMethods = ifc.getDeclaredMethods();
+			Method[] declaredMethods = traverseMethods(ifc);
 			for (int i = 0; i < declaredMethods.length; i++) {
 				String annotationName = null;
 				if(declaredMethods[i].isAnnotationPresent(Select.class))
