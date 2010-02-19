@@ -4,12 +4,14 @@ import org.junit.Test;
 import org.resurged.QueryObjectFactory;
 import org.resurged.impl.Log;
 import org.resurged.test.util.AbstractTestCase;
+import org.resurged.test.util.Generator;
+import org.resurged.test.util.Vendor;
 
 
 public class NoPackageTest extends AbstractTestCase {
 	NoPackageDao dao=null;
 
-	public NoPackageTest(int vendor, int generator) {
+	public NoPackageTest(Vendor vendor, Generator generator) {
 		super(vendor, generator);
 	}
 	

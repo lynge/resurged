@@ -8,17 +8,18 @@ import org.resurged.jdbc.DataSet;
 import org.resurged.test.model.Person;
 import org.resurged.test.model.PersonDao;
 import org.resurged.test.util.AbstractTestCase;
-
+import org.resurged.test.util.Generator;
+import org.resurged.test.util.Vendor;
 
 public class DataSourceTest extends AbstractTestCase {
 	PersonDao dao=null;
 
-	public DataSourceTest(int vendor, int generator) {
+	public DataSourceTest(Vendor vendor, Generator generator) {
 		super(vendor, generator);
 	}
 	
 	public void init() throws Exception{
-    	if(vendor!=DERBY)
+    	if(vendor!=Vendor.Derby)
     		return;
     	
 		dao = QueryObjectFactory.createQueryObject(PersonDao.class, getDs(), configuration);
@@ -29,7 +30,7 @@ public class DataSourceTest extends AbstractTestCase {
 	}
 
     public void cleanup() throws Exception{
-    	if(vendor!=DERBY)
+    	if(vendor!=Vendor.Derby)
     		return;
     	
 		int dropResult = dao.dropTable();
@@ -38,7 +39,7 @@ public class DataSourceTest extends AbstractTestCase {
 
     @Test
     public void testBasic() throws Exception {
-    	if(vendor!=DERBY)
+    	if(vendor!=Vendor.Derby)
     		return;
     	
 		int rowsAffected = dao.insert(1, "Arthur", "Dent");

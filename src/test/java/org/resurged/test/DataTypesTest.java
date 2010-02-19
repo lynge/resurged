@@ -10,17 +10,19 @@ import org.resurged.jdbc.DataSet;
 import org.resurged.test.model.DataTypes;
 import org.resurged.test.model.DataTypesDao;
 import org.resurged.test.util.AbstractTestCase;
+import org.resurged.test.util.Generator;
+import org.resurged.test.util.Vendor;
 
 
 public class DataTypesTest extends AbstractTestCase {
 	DataTypesDao dao=null;
 
-	public DataTypesTest(int vendor, int generator) {
+	public DataTypesTest(Vendor vendor, Generator generator) {
 		super(vendor, generator);
 	}
 	
 	public void init() throws Exception{
-    	if(vendor!=DERBY)
+    	if(vendor!=Vendor.Derby)
     		return;
     	
 		dao = QueryObjectFactory.createQueryObject(DataTypesDao.class, getConnection(), configuration);
@@ -31,7 +33,7 @@ public class DataTypesTest extends AbstractTestCase {
 	}
 
     public void cleanup() throws Exception{
-    	if(vendor!=DERBY)
+    	if(vendor!=Vendor.Derby)
     		return;
     	
 		int dropResult = dao.dropTable();
@@ -40,7 +42,7 @@ public class DataTypesTest extends AbstractTestCase {
 
     @Test
 	public void testDataTypes() throws Exception{
-    	if(vendor!=DERBY)
+    	if(vendor!=Vendor.Derby)
     		return;
     	
 //		int rowsAffected = dao.insert(false, new Boolean(true), (byte)10, new Byte((byte)11), 'r', new Character('R'), (short)20, new Short((short)21), 30, new Integer(31), 40L, new Long(41L), 50.1f, new Float(51.2f), 60.3d, new Double(61.4), "foo", "FOO");

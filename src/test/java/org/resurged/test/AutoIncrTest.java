@@ -9,28 +9,30 @@ import org.resurged.jdbc.DataSet;
 import org.resurged.test.model.PersonDao;
 import org.resurged.test.model.PersonKey;
 import org.resurged.test.util.AbstractTestCase;
+import org.resurged.test.util.Generator;
+import org.resurged.test.util.Vendor;
 
 
 public class AutoIncrTest extends AbstractTestCase {
 	PersonDao dao=null;
 
-	public AutoIncrTest(int vendor, int generator) {
+	public AutoIncrTest(Vendor vendor, Generator generator) {
 		super(vendor, generator);
 	}
 	
 	public void init() throws Exception{
-    	if(vendor!=MYSQL)
+    	if(vendor!=Vendor.MySql)
     		return;
     	
 		dao = QueryObjectFactory.createQueryObject(PersonDao.class, getConnection(), configuration);
 		Log.info(this, "PersonDao loaded");
 
-		int createResult =(vendor==MYSQL)? dao.createTableAutoIncrMySql() : dao.createTableAutoIncr();
+		int createResult =(vendor==Vendor.MySql)? dao.createTableAutoIncrMySql() : dao.createTableAutoIncr();
 		Log.info(this, "Table create, rows affected: " + createResult);
 	}
 
     public void cleanup() throws Exception{
-    	if(vendor!=MYSQL)
+    	if(vendor!=Vendor.MySql)
     		return;
     	
 		int dropResult = dao.dropTable();
@@ -39,7 +41,7 @@ public class AutoIncrTest extends AbstractTestCase {
 
     @Test
 	public void testReturnKeys(){
-    	if(vendor!=MYSQL)
+    	if(vendor!=Vendor.MySql)
     		return;
     	
 //		DataSet<PersonKey> keys = dao.insertReturnKeysNoKeys("Arthur", "Dent");

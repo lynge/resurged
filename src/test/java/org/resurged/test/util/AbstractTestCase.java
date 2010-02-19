@@ -21,23 +21,17 @@ import org.resurged.impl.classgen.jdk6.JdkGenerator;
 @RunWith(Parameterized.class)
 public abstract class AbstractTestCase { 
     private static final String[][] CONNECTION_PROPERTIES={
-    	{"org.apache.derby.jdbc.EmbeddedDriver", "jdbc:derby:MyDbTest;create=true", "", ""},
-    	{"com.mysql.jdbc.Driver", "jdbc:mysql://localhost:3306/resurged", "resurged", "resurged"},
-    	{"", "", "", ""},
-    	{"oracle.jdbc.driver.OracleDriver", "jdbc:oracle:thin:@Mlocalhost:1521:resurged", "resurged", "resurged"}
+    	{"org.apache.derby.jdbc.EmbeddedDriver", 	"jdbc:derby:MyDbTest;create=true", 				"", ""},
+    	{"com.mysql.jdbc.Driver", 					"jdbc:mysql://localhost:3306/resurged", 		"resurged", "resurged"},
+    	{"org.postgresql.Driver", 					"jdbc:postgresql://localhost/postgres", 		"resurged", "resurged"},
+    	{"oracle.jdbc.driver.OracleDriver", 		"jdbc:oracle:thin:@Mlocalhost:1521:resurged", 	"resurged", "resurged"}
     };
     
-	public static final String[] VENDOR_NAMES={"DERBY","MYSQL","POSTGRES","ORACLE"};
-	public static final int DERBY=0, MYSQL=1, POSTGRES=2, ORACLE=3;
+	public static final Vendor[] VENDORS={Vendor.Postgres};
+	public static final Generator[] GENERATORS={Generator.Asm};
 	
-	public static final String[] GENERATOR_NAMES={"ASM","JDK"};
-	public static final int ASM=0, JDK=1;
-	
-	public static final int[] VENDORS={DERBY};
-	public static final int[] GENERATORS={ASM, JDK};
-	
-    protected int generator;
-	protected int vendor;
+	protected Vendor vendor;
+    protected Generator generator;
 	
 	protected Config configuration=new Config();
 	private Connection con = null;
@@ -45,8 +39,12 @@ public abstract class AbstractTestCase {
 	
 	public abstract void init() throws Exception;
     public abstract void cleanup() throws Exception;
+    
+    public static void main(String[] args) {
+		System.out.println(Vendor.Derby.intValue());
+	}
 
-    public AbstractTestCase(int vendor, int generator) {
+    public AbstractTestCase(Vendor vendor, Generator generator) {
 		this.vendor = vendor;
 		this.generator = generator;
 		Config.setLoggingStrategy(new Log.ConsoleLogger());
@@ -54,10 +52,10 @@ public abstract class AbstractTestCase {
     
     @Before
     public void setup() throws Exception{
-    	Log.info(this, "================= " + this.getClass().getSimpleName() + "-" + GENERATOR_NAMES[generator] + "@" + VENDOR_NAMES[vendor] + "=================");
+    	Log.info(this, "================= " + this.getClass().getSimpleName() + "-" + generator + "@" + vendor + "=================");
 
     	switch (generator) {
-			case ASM:
+			case Asm:
 				configuration.setGenerator(new AsmGenerator());
 				break;
 			default:
@@ -77,7 +75,7 @@ public abstract class AbstractTestCase {
 		Log.info(this, "Connection closed");
 
 		try{
-			if(vendor==DERBY)
+			if(vendor==Vendor.Derby)
 				DriverManager.getConnection("jdbc:derby:MyDbTest;shutdown=true");
 		}catch (Exception e) {}
     }
@@ -96,9 +94,9 @@ public abstract class AbstractTestCase {
     
     public Connection getConnection() throws Exception{
 		if(con==null){
-			Class.forName(CONNECTION_PROPERTIES[vendor][0]);
-			con = DriverManager.getConnection(CONNECTION_PROPERTIES[vendor][1],CONNECTION_PROPERTIES[vendor][2], CONNECTION_PROPERTIES[vendor][3]);
-			Log.info(this, VENDOR_NAMES[vendor] + " connection opened");
+			Class.forName(CONNECTION_PROPERTIES[vendor.intValue()][0]);
+			con = DriverManager.getConnection(CONNECTION_PROPERTIES[vendor.intValue()][1],CONNECTION_PROPERTIES[vendor.intValue()][2], CONNECTION_PROPERTIES[vendor.intValue()][3]);
+			Log.info(this, vendor + " connection opened");
 		}
     	return con;
     }
@@ -106,10 +104,10 @@ public abstract class AbstractTestCase {
 	public DataSource getDs() {
 		if(ds==null){
 			BasicDataSource basicDs = new BasicDataSource();
-			basicDs.setDriverClassName(CONNECTION_PROPERTIES[vendor][0]);
-			basicDs.setUrl(CONNECTION_PROPERTIES[vendor][1]);
-			basicDs.setUsername(CONNECTION_PROPERTIES[vendor][2]);
-			basicDs.setPassword(CONNECTION_PROPERTIES[vendor][3]);
+			basicDs.setDriverClassName(CONNECTION_PROPERTIES[vendor.intValue()][0]);
+			basicDs.setUrl(CONNECTION_PROPERTIES[vendor.intValue()][1]);
+			basicDs.setUsername(CONNECTION_PROPERTIES[vendor.intValue()][2]);
+			basicDs.setPassword(CONNECTION_PROPERTIES[vendor.intValue()][3]);
 			ds=basicDs;
 			Log.info(this, "DataSource loaded");
 		}

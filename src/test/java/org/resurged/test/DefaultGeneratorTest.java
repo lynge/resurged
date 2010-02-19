@@ -6,12 +6,14 @@ import org.resurged.QueryObjectFactory;
 import org.resurged.impl.Log;
 import org.resurged.test.model.PersonDao;
 import org.resurged.test.util.AbstractTestCase;
+import org.resurged.test.util.Generator;
+import org.resurged.test.util.Vendor;
 
 
 public class DefaultGeneratorTest extends AbstractTestCase {
 	PersonDao dao=null;
 
-	public DefaultGeneratorTest(int vendor, int generator) {
+	public DefaultGeneratorTest(Vendor vendor, Generator generator) {
 		super(vendor, generator);
 	}
 	

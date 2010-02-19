@@ -8,12 +8,14 @@ import org.resurged.jdbc.DataSet;
 import org.resurged.test.model.Person;
 import org.resurged.test.model.PersonDao;
 import org.resurged.test.util.AbstractTestCase;
+import org.resurged.test.util.Generator;
+import org.resurged.test.util.Vendor;
 
 
 public class BasicTest extends AbstractTestCase {
 	PersonDao dao=null;
 
-	public BasicTest(int vendor, int generator) {
+	public BasicTest(Vendor vendor, Generator generator) {
 		super(vendor, generator);
 	}
 	
