@@ -9,6 +9,7 @@ import java.sql.SQLException;
 
 import javax.sql.DataSource;
 
+import org.resurged.impl.classgen.AbstractGenerator;
 import org.resurged.jdbc.BaseQuery;
 import org.resurged.jdbc.SQLRuntimeException;
 import org.resurged.jdbc.Select;
@@ -40,7 +41,7 @@ public abstract class AbstractBaseQuery implements BaseQuery {
 		Connection connection=null;
 		try{
 			connection = getConnection();
-			Method method = interfaceClass.getDeclaredMethod(methodName, parameterTypes);
+			Method method = getMethod(interfaceClass, methodName, parameterTypes);
 			Annotation annotation = method.getAnnotation(annotationClass);
 			Class<?> returnType = getReturnType(method);
 			
@@ -59,6 +60,23 @@ public abstract class AbstractBaseQuery implements BaseQuery {
 		
 	}
 
+	@SuppressWarnings("unchecked")
+	private Method getMethod(Class<?> interfaceClass, String methodName, Class<?>[] parameterTypes) {
+		Method[] methods=AbstractGenerator.traverseMethods((Class<? extends BaseQuery>)interfaceClass);
+		for (int i = 0; i < methods.length; i++) {
+			Class<?>[] methodParameterTypes = methods[i].getParameterTypes();
+			if(methods[i].getName().equals(methodName) && methodParameterTypes.length==parameterTypes.length){
+				boolean allMatch=true;
+				for (int j = 0; j < parameterTypes.length; j++) {
+					if(!parameterTypes[j].equals(methodParameterTypes[j]))
+						allMatch=false;
+				}
+				if(allMatch)
+					return methods[i];
+			}
+		}
+		throw new SQLRuntimeException("Method " + methodName + "(" + parameterTypes + ") was not found in " + interfaceClass.getName());
+	}
 	private static Class<?> getReturnType(Method method) {
 		Type returnType = method.getGenericReturnType();
 		if(returnType instanceof ParameterizedType){

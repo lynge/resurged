@@ -27,8 +27,8 @@ public abstract class AbstractTestCase {
     	{"oracle.jdbc.driver.OracleDriver", 		"jdbc:oracle:thin:@Mlocalhost:1521:resurged", 	"resurged", "resurged"}
     };
     
-	public static final Vendor[] VENDORS={Vendor.Postgres};
-	public static final Generator[] GENERATORS={Generator.Asm};
+	public static final Vendor[] VENDORS={Vendor.Derby};
+	public static final Generator[] GENERATORS={Generator.Asm, Generator.Jdk};
 	
 	protected Vendor vendor;
     protected Generator generator;
@@ -39,10 +39,6 @@ public abstract class AbstractTestCase {
 	
 	public abstract void init() throws Exception;
     public abstract void cleanup() throws Exception;
-    
-    public static void main(String[] args) {
-		System.out.println(Vendor.Derby.intValue());
-	}
 
     public AbstractTestCase(Vendor vendor, Generator generator) {
 		this.vendor = vendor;

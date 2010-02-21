@@ -34,11 +34,27 @@ public class Marshaller <T> {
 			throw new RuntimeException(type.getName() + " must have a no-args constructor!");
 		}
 		
-		Field[] declaredFields = type.getDeclaredFields();
-		for (int i = 0; i < declaredFields.length; i++) {
-			FieldMarshaller fieldMarshaller = new FieldMarshaller(declaredFields[i]);
+		Field[] fields = traverseFields(type);
+		for (int i = 0; i < fields.length; i++) {
+			FieldMarshaller fieldMarshaller = new FieldMarshaller(fields[i]);
 			fieldMarshallers.put(fieldMarshaller.getFieldName(), fieldMarshaller);
 		}
+	}
+
+	private Field[] traverseFields(Class<T> klass) {
+		HashMap<String, Field> methods=new HashMap<String, Field>();
+		traverseFields(klass, methods);
+		return (Field[]) methods.values().toArray(new Field[]{});
+	}
+	@SuppressWarnings("unchecked")
+	private static void traverseFields(Class klass, HashMap<String, Field> fields){
+		Class superclass = klass.getSuperclass();
+		if(superclass!=Object.class)
+			traverseFields(superclass, fields);
+			
+		Field[] currentClassFields = klass.getDeclaredFields();
+		for (int j = 0; j < currentClassFields.length; j++)
+			fields.put(currentClassFields[j].getName(), currentClassFields[j]);
 	}
 
 	public T getObject(ResultSet rs) throws SQLException {
