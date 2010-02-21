@@ -10,6 +10,8 @@ import org.resurged.jdbc.QueryObjectGenerator;
 import org.resurged.jdbc.Select;
 import org.resurged.jdbc.Update;
 
+import com.sun.xml.internal.ws.org.objectweb.asm.Type;
+
 public abstract class AbstractGenerator implements QueryObjectGenerator {
 	protected static final String SUFFIX = "Resurged";
 	
@@ -41,7 +43,7 @@ public abstract class AbstractGenerator implements QueryObjectGenerator {
 			Method[] currentClassMethods = klass.getDeclaredMethods();
 			for (int j = 0; j < currentClassMethods.length; j++) {
 //				System.out.println(currentClassMethods[j].getName());
-				methods.put(currentClassMethods[j].getName(), currentClassMethods[j]);
+				methods.put(currentClassMethods[j].getName()+Type.getMethodDescriptor(currentClassMethods[j]), currentClassMethods[j]);
 			}
 		}
 	}

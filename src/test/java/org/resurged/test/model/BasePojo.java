@@ -2,7 +2,7 @@ package org.resurged.test.model;
 
 import org.resurged.jdbc.ResultColumn;
 
-public class Person {
+public class BasePojo {
 	@ResultColumn(name="LAST_NAME")
 	private String lastName;
 	

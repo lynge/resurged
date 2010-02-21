@@ -27,6 +27,6 @@ public interface DataTypesDao extends BaseQuery{
 	public int deleteAll();
 	
 	@Select("SELECT * FROM DataTypes")
-	public DataSet<DataTypes> getAll();
+	public DataSet<DataTypesPojo> getAll();
 	
 }

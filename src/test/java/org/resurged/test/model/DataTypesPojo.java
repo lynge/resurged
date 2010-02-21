@@ -2,7 +2,7 @@ package org.resurged.test.model;
 
 import java.util.Date;
 
-public class DataTypes {
+public class DataTypesPojo {
 	// boolean byte char short int long float double String
 	private boolean boolean1;
 	private Boolean boolean2;

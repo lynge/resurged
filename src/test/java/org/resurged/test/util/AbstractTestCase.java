@@ -24,12 +24,13 @@ public abstract class AbstractTestCase {
     	{"org.apache.derby.jdbc.EmbeddedDriver", 	"jdbc:derby:MyDbTest;create=true", 				"", ""},
     	{"com.mysql.jdbc.Driver", 					"jdbc:mysql://localhost:3306/resurged", 		"resurged", "resurged"},
     	{"org.postgresql.Driver", 					"jdbc:postgresql://localhost/postgres", 		"resurged", "resurged"},
-    	{"oracle.jdbc.driver.OracleDriver", 		"jdbc:oracle:thin:@Mlocalhost:1521:resurged", 	"resurged", "resurged"}
+    	{"oracle.jdbc.driver.OracleDriver", 		"jdbc:oracle:thin:@localhost:1521:resurged", 	"resurged", "resurged"}
     };
     
-	public static final Vendor[] VENDORS={Vendor.Derby};
+	public static final Vendor[] VENDORS={Vendor.Derby, Vendor.MySql, Vendor.Postgres, Vendor.Oracle};
 	public static final Generator[] GENERATORS={Generator.Asm, Generator.Jdk};
 	
+	private static Vendor[] vendors;
 	protected Vendor vendor;
     protected Generator generator;
 	
@@ -78,10 +79,19 @@ public abstract class AbstractTestCase {
 
     @Parameters
     public static Collection<Object[]> data() {
+    	ArrayList<Vendor> v=new ArrayList<Vendor>();
+    	for (int i = 0; i < VENDORS.length; i++) {
+			try {
+				Class.forName(CONNECTION_PROPERTIES[VENDORS[i].intValue()][0]);
+				v.add(VENDORS[i]);
+			} catch (Exception e) {}
+		}
+    	vendors = v.toArray(new Vendor[0]);
+    	
         Collection<Object[]> data = new ArrayList<Object[]>();
-        for (int i = 0; i < VENDORS.length; i++) {
+        for (int i = 0; i < vendors.length; i++) {
         	for (int j = 0; j < GENERATORS.length; j++) {
-                data.add(new Object[]{VENDORS[i], GENERATORS[j]});
+                data.add(new Object[]{vendors[i], GENERATORS[j]});
 			}
 			
 		}

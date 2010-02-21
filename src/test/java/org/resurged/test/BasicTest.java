@@ -5,22 +5,22 @@ import org.junit.Test;
 import org.resurged.QueryObjectFactory;
 import org.resurged.impl.Log;
 import org.resurged.jdbc.DataSet;
-import org.resurged.test.model.Person;
-import org.resurged.test.model.PersonDao;
+import org.resurged.test.model.BasePojo;
+import org.resurged.test.model.BaseDao;
 import org.resurged.test.util.AbstractTestCase;
 import org.resurged.test.util.Generator;
 import org.resurged.test.util.Vendor;
 
 
 public class BasicTest extends AbstractTestCase {
-	PersonDao dao=null;
+	BaseDao dao=null;
 
 	public BasicTest(Vendor vendor, Generator generator) {
 		super(vendor, generator);
 	}
 	
 	public void init() throws Exception{
-		dao = QueryObjectFactory.createQueryObject(PersonDao.class, getConnection(), configuration);
+		dao = QueryObjectFactory.createQueryObject(BaseDao.class, getConnection(), configuration);
 		Log.info(this, "PersonDao loaded");
 
 		int createResult = dao.createTable();
@@ -49,15 +49,15 @@ public class BasicTest extends AbstractTestCase {
 		Log.info(this, "Row updated, rows affected: " + affected);
 		Assert.assertEquals(1, affected);
 
-		DataSet<Person> all = dao.getAll();
+		DataSet<BasePojo> all = dao.getAll();
 		Assert.assertEquals(3, all.size());
-		for (Person dto : all) {
+		for (BasePojo dto : all) {
 			Log.info(this, dto.toString());
 		}
 
-		DataSet<Person> some = dao.getSome(1);
+		DataSet<BasePojo> some = dao.getSome(1);
 		Assert.assertEquals(1, some.size());
-		for (Person dto : some) {
+		for (BasePojo dto : some) {
 			Log.info(this, dto.toString());
 		}
 

@@ -245,22 +245,8 @@ public class AsmGenerator extends AbstractGenerator {
 	}
 	
 	private String getPrimitiveString(Class<?> klass){
-		if(klass==Boolean.TYPE)
-			return "Z";
-		else if(klass==Byte.TYPE)
-			return "B";
-		else if(klass==Character.TYPE)
-			return "C";
-		else if(klass==Short.TYPE)
-			return "S";
-		else if(klass==Integer.TYPE)
-			return "I";
-		else if(klass==Long.TYPE)
-			return "J";
-		else if(klass==Float.TYPE)
-			return "F";
-		else if(klass==Double.TYPE)
-			return "D";
+		if(klass.isPrimitive())
+			return Type.getType(klass).toString();
 		
 		throw new SQLRuntimeException(klass.getName() + " is not a primitive");
 	}

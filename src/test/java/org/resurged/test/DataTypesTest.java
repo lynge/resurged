@@ -7,7 +7,7 @@ import org.junit.Test;
 import org.resurged.QueryObjectFactory;
 import org.resurged.impl.Log;
 import org.resurged.jdbc.DataSet;
-import org.resurged.test.model.DataTypes;
+import org.resurged.test.model.DataTypesPojo;
 import org.resurged.test.model.DataTypesDao;
 import org.resurged.test.util.AbstractTestCase;
 import org.resurged.test.util.Generator;
@@ -55,9 +55,9 @@ public class DataTypesTest extends AbstractTestCase {
 
 		Assert.assertEquals(1, rowsAffected);
 		
-		DataSet<DataTypes> all = dao.getAll();
+		DataSet<DataTypesPojo> all = dao.getAll();
 		Assert.assertEquals(1, all.size());
-		for (DataTypes dto : all) {
+		for (DataTypesPojo dto : all) {
 			Assert.assertEquals(false, dto.isBoolean1());
 			Assert.assertEquals(new Boolean(true), dto.getBoolean2());
 			Assert.assertEquals(Byte.MIN_VALUE, dto.getByte1());
