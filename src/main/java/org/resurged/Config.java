@@ -4,11 +4,15 @@ import org.resurged.impl.Log;
 import org.resurged.impl.Log.LogStrategy;
 import org.resurged.impl.classgen.asm.AsmGenerator;
 import org.resurged.impl.classgen.jdk6.JdkGenerator;
+import org.resurged.impl.marshalling.FieldMarshaller;
+import org.resurged.impl.marshalling.FieldMarshallerFactory;
 import org.resurged.jdbc.QueryObjectGenerator;
 import org.resurged.jdbc.SQLRuntimeException;
+import org.resurged.test.util.MyFieldMarshaller;
 
 public class Config {
 	private QueryObjectGenerator generator=null, defaultGenerator=null;
+	private Class<? extends FieldMarshaller> fieldMarshallerClass=FieldMarshaller.class;
 
 	QueryObjectGenerator getBytecodeGenerator() {
 		if(generator!=null)
@@ -49,4 +53,14 @@ public class Config {
 	public static LogStrategy getLoggingStrategy() {
 		return Log.getLoggingStrategy();
 	}
+
+	public void setFieldMarshallerClass(Class<? extends FieldMarshaller> fieldMarshallerClass) {
+		this.fieldMarshallerClass = fieldMarshallerClass;
+		// TODO: Refactor away from singleton based implementation
+		FieldMarshallerFactory.setClass(MyFieldMarshaller.class);
+	}
+	public Class<? extends FieldMarshaller> getFieldMarshallerClass() {
+		return fieldMarshallerClass;
+	}
+	
 }
