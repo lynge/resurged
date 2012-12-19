@@ -3,7 +3,7 @@
 	<groupId>org.resurged</groupId>
 	<artifactId>resurged</artifactId>
 	<packaging>jar</packaging>
-	<version>0.3.2-SNAPSHOT</version>
+	<version>0.3.3-SNAPSHOT</version>
 	<name>resurged</name>
 	<url>http://maven.apache.org</url>
 	<scm>
