@@ -5,6 +5,7 @@ import java.sql.SQLException;
 
 import javax.sql.DataSource;
 
+import org.resurged.impl.marshalling.FieldMarshaller;
 import org.resurged.jdbc.BaseQuery;
 import org.resurged.jdbc.SQLRuntimeException;
 
@@ -86,6 +87,13 @@ public class QueryObjectFactory {
 	public static <T extends BaseQuery> T createQueryObject(Class<T> ifc, Connection con) throws SQLRuntimeException {
 		return createQueryObject(ifc, con, staticConfiguration);
 	}
+	public static <T extends BaseQuery> T createQueryObject(Class<T> ifc, Connection con, Class<? extends FieldMarshaller> fieldMarshallerClass) throws SQLRuntimeException {
+		return createQueryObject(ifc, con, staticConfiguration, fieldMarshallerClass);
+	}
+	public static <T extends BaseQuery> T createQueryObject(Class<T> ifc, Connection con, Config configuration, Class<? extends FieldMarshaller> fieldMarshallerClass) throws SQLRuntimeException {
+		staticConfiguration.setFieldMarshallerClass(fieldMarshallerClass);
+		return createQueryObject(ifc, con, staticConfiguration);
+	}
 	
 	public static <T extends BaseQuery> T createQueryObject(Class<T> ifc, Connection con, Config configuration) throws SQLRuntimeException {
 		try {
@@ -108,6 +116,14 @@ public class QueryObjectFactory {
 	public static <T extends BaseQuery> T createQueryObject(Class<T> ifc, DataSource ds) throws SQLRuntimeException {
 		return createQueryObject(ifc, ds, staticConfiguration);
 	}
+	public static <T extends BaseQuery> T createQueryObject(Class<T> ifc, DataSource ds, Class<? extends FieldMarshaller> fieldMarshallerClass) throws SQLRuntimeException {
+		return createQueryObject(ifc, ds, staticConfiguration, fieldMarshallerClass);
+	}
+	public static <T extends BaseQuery> T createQueryObject(Class<T> ifc, DataSource ds, Config configuration, Class<? extends FieldMarshaller> fieldMarshallerClass) throws SQLRuntimeException {
+		staticConfiguration.setFieldMarshallerClass(fieldMarshallerClass);
+		return createQueryObject(ifc, ds, staticConfiguration);
+	}
+	
 	public static <T extends BaseQuery> T createQueryObject(Class<T> ifc, DataSource ds, Config configuration) throws SQLRuntimeException {
 		try {
 			return configuration.getBytecodeGenerator().createQueryObject(ifc, ds);

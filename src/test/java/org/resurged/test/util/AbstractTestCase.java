@@ -21,10 +21,10 @@ import org.resurged.impl.classgen.jdk6.JdkGenerator;
 @RunWith(Parameterized.class)
 public abstract class AbstractTestCase { 
     private static final String[][] CONNECTION_PROPERTIES={
-    	{"org.apache.derby.jdbc.EmbeddedDriver", 	"jdbc:derby:MyDbTest;create=true", 				"", ""},
-    	{"com.mysql.jdbc.Driver", 					"jdbc:mysql://localhost:3306/resurged", 		"resurged", "resurged"},
-    	{"org.postgresql.Driver", 					"jdbc:postgresql://localhost/postgres", 		"resurged", "resurged"},
-    	{"oracle.jdbc.driver.OracleDriver", 		"jdbc:oracle:thin:@localhost:1521:resurged",	"resurged", "resurged"}
+    	{"org.apache.derby.jdbc.EmbeddedDriver", 	"jdbc:derby:MyDbTest;create=true", 				  "", ""},
+    	{"com.mysql.jdbc.Driver", 					"jdbc:mysql://localhost:3306/resurged", 		  "resurged", "resurged"},
+    	{"org.postgresql.Driver", 					"jdbc:postgresql://localhost/postgres", 		  "resurged", "resurged"},
+        {"oracle.jdbc.driver.OracleDriver",         "jdbc:oracle:thin:@veudb.dk.logica.com:1521:veu", "veu047", "veu047"}
     };
     
 	public static final Vendor[] VENDORS={Vendor.Derby, Vendor.MySql, Vendor.Postgres, Vendor.Oracle};

@@ -8,7 +8,6 @@ import org.resurged.impl.marshalling.FieldMarshaller;
 import org.resurged.impl.marshalling.FieldMarshallerFactory;
 import org.resurged.jdbc.QueryObjectGenerator;
 import org.resurged.jdbc.SQLRuntimeException;
-import org.resurged.test.util.MyFieldMarshaller;
 
 public class Config {
 	private QueryObjectGenerator generator=null, defaultGenerator=null;
@@ -57,7 +56,7 @@ public class Config {
 	public void setFieldMarshallerClass(Class<? extends FieldMarshaller> fieldMarshallerClass) {
 		this.fieldMarshallerClass = fieldMarshallerClass;
 		// TODO: Refactor away from singleton based implementation
-		FieldMarshallerFactory.setClass(MyFieldMarshaller.class);
+		FieldMarshallerFactory.setClass(fieldMarshallerClass);
 	}
 	public Class<? extends FieldMarshaller> getFieldMarshallerClass() {
 		return fieldMarshallerClass;

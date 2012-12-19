@@ -26,7 +26,7 @@ public class FieldMarshallerTest extends AbstractTestCase {
     		return;
     	
     	configuration.setFieldMarshallerClass(MyFieldMarshaller.class);
-		dao = QueryObjectFactory.createQueryObject(OracleDataTypesDao.class, getConnection(), configuration);
+		dao = QueryObjectFactory.createQueryObject(OracleDataTypesDao.class, getConnection(), MyFieldMarshaller.class);
 		Log.info(this, "OracleDao loaded");
 
 		int createResult = dao.createTable();
