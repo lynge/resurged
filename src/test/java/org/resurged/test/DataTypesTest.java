@@ -10,15 +10,14 @@ import org.resurged.jdbc.DataSet;
 import org.resurged.test.model.DataTypesPojo;
 import org.resurged.test.model.DataTypesDao;
 import org.resurged.test.util.AbstractTestCase;
-import org.resurged.test.util.Generator;
 import org.resurged.test.util.Vendor;
 
 
 public class DataTypesTest extends AbstractTestCase {
 	DataTypesDao dao=null;
 
-	public DataTypesTest(Vendor vendor, Generator generator) {
-		super(vendor, generator);
+	public DataTypesTest(Vendor vendor) {
+		super(vendor);
 	}
 	
 	public void init() throws Exception{
@@ -49,7 +48,7 @@ public class DataTypesTest extends AbstractTestCase {
 		Date now=new Date();
 		java.sql.Date nowSqlDate=new java.sql.Date(now.getTime());
 		
-		int rowsAffected = dao.insert(false, new Boolean(true), Byte.MIN_VALUE, new Byte(Byte.MAX_VALUE), Short.MIN_VALUE, new Short((short)Short.MAX_VALUE), Integer.MIN_VALUE, new Integer(Integer.MAX_VALUE), Long.MIN_VALUE, new Long(Long.MAX_VALUE), 10.0f, new Float(Float.MAX_VALUE), 20.0d, new Double(30.0d), "foo", "æøå", now, nowSqlDate
+		int rowsAffected = dao.insert(false, new Boolean(true), Byte.MIN_VALUE, new Byte(Byte.MAX_VALUE), Short.MIN_VALUE, new Short((short)Short.MAX_VALUE), Integer.MIN_VALUE, new Integer(Integer.MAX_VALUE), Long.MIN_VALUE, new Long(Long.MAX_VALUE), 10.0f, new Float(Float.MAX_VALUE), 20.0d, new Double(30.0d), "foo", "ï¿½ï¿½ï¿½", now, nowSqlDate
 );
 		Log.info(this, "Row inserted, rows affected: " + rowsAffected);
 
@@ -75,7 +74,7 @@ public class DataTypesTest extends AbstractTestCase {
 			Assert.assertEquals(20.0d, dto.getDouble1(), 0d);
 			Assert.assertEquals(new Double(30.0d), dto.getDouble2());
 			Assert.assertEquals("foo", dto.getString1().trim());
-			Assert.assertEquals("æøå", dto.getString2());
+			Assert.assertEquals("ï¿½ï¿½ï¿½", dto.getString2());
 			
 //			assertEquals(now, dto.getDate1());
 //			assertEquals(nowSqlDate, dto.getDate2());

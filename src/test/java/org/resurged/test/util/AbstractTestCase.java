@@ -15,8 +15,6 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 import org.resurged.Config;
 import org.resurged.impl.Log;
-import org.resurged.impl.classgen.asm.AsmGenerator;
-import org.resurged.impl.classgen.jdk6.JdkGenerator;
 
 @RunWith(Parameterized.class)
 public abstract class AbstractTestCase { 
@@ -28,11 +26,9 @@ public abstract class AbstractTestCase {
     };
     
 	public static final Vendor[] VENDORS={Vendor.Derby, Vendor.MySql, Vendor.Postgres, Vendor.Oracle};
-	public static final Generator[] GENERATORS={Generator.Asm, Generator.Jdk};
 	
 	private static Vendor[] vendors;
 	protected Vendor vendor;
-    protected Generator generator;
 	
 	protected Config configuration=new Config();
 	private Connection con = null;
@@ -41,25 +37,14 @@ public abstract class AbstractTestCase {
 	public abstract void init() throws Exception;
     public abstract void cleanup() throws Exception;
 
-    public AbstractTestCase(Vendor vendor, Generator generator) {
+    public AbstractTestCase(Vendor vendor) {
 		this.vendor = vendor;
-		this.generator = generator;
 		Config.setLoggingStrategy(new Log.ConsoleLogger());
     }
     
     @Before
     public void setup() throws Exception{
-    	Log.info(this, "================= " + this.getClass().getSimpleName() + "-" + generator + "@" + vendor + "=================");
-
-    	switch (generator) {
-			case Asm:
-				configuration.setGenerator(new AsmGenerator());
-				break;
-			default:
-				configuration.setGenerator(new JdkGenerator());
-				break;
-		}
-    	
+    	Log.info(this, "================= " + this.getClass().getSimpleName() + "-" + vendor + "=================");
 		init();
     }
     
@@ -90,10 +75,7 @@ public abstract class AbstractTestCase {
     	
         Collection<Object[]> data = new ArrayList<Object[]>();
         for (int i = 0; i < vendors.length; i++) {
-        	for (int j = 0; j < GENERATORS.length; j++) {
-                data.add(new Object[]{vendors[i], GENERATORS[j]});
-			}
-			
+        	data.add(new Object[]{vendors[i]});
 		}
         return data;
     }

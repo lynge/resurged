@@ -4,12 +4,10 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.resurged.QueryObjectFactory;
 import org.resurged.impl.Log;
-import org.resurged.impl.marshalling.FieldMarshallerFactory;
 import org.resurged.jdbc.DataSet;
 import org.resurged.test.model.oracle.OracleDataTypesDao;
 import org.resurged.test.model.oracle.OracleDataTypesPojo;
 import org.resurged.test.util.AbstractTestCase;
-import org.resurged.test.util.Generator;
 import org.resurged.test.util.MyFieldMarshaller;
 import org.resurged.test.util.Vendor;
 
@@ -17,8 +15,8 @@ import org.resurged.test.util.Vendor;
 public class FieldMarshallerTest extends AbstractTestCase {
 	OracleDataTypesDao dao=null;
 
-	public FieldMarshallerTest(Vendor vendor, Generator generator) {
-		super(vendor, generator);
+	public FieldMarshallerTest(Vendor vendor) {
+		super(vendor);
 	}
 	
 	public void init() throws Exception{

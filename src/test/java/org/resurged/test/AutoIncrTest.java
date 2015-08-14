@@ -10,15 +10,14 @@ import org.resurged.test.model.AutoIncrDao;
 import org.resurged.test.model.BasePojoKey;
 import org.resurged.test.util.AbstractTestCase;
 import org.resurged.test.util.DaoLocator;
-import org.resurged.test.util.Generator;
 import org.resurged.test.util.Vendor;
 
 
 public class AutoIncrTest extends AbstractTestCase {
 	AutoIncrDao dao=null;
 
-	public AutoIncrTest(Vendor vendor, Generator generator) {
-		super(vendor, generator);
+	public AutoIncrTest(Vendor vendor) {
+		super(vendor);
 	}
 	
 	public void init() throws Exception{

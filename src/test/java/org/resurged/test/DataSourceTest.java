@@ -8,14 +8,13 @@ import org.resurged.jdbc.DataSet;
 import org.resurged.test.model.BasePojo;
 import org.resurged.test.model.BaseDao;
 import org.resurged.test.util.AbstractTestCase;
-import org.resurged.test.util.Generator;
 import org.resurged.test.util.Vendor;
 
 public class DataSourceTest extends AbstractTestCase {
 	BaseDao dao=null;
 
-	public DataSourceTest(Vendor vendor, Generator generator) {
-		super(vendor, generator);
+	public DataSourceTest(Vendor vendor) {
+		super(vendor);
 	}
 	
 	public void init() throws Exception{
