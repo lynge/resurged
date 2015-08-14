@@ -25,16 +25,7 @@ public class QueryObjectFactory2 {
 			public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 				Update annotation = method.getAnnotation(Update.class);
 				if(annotation != null) {
-					String sql = annotation.value();
-					if(args != null) {
-						for(int i=0;i<args.length;i++) {
-							String dataWrapper = "";
-							if(args[i].getClass() == String.class) {
-								dataWrapper = "'";
-							}
-							sql = sql.replace("?"+(i+1), dataWrapper + args[i].toString() + dataWrapper);
-						}
-					}
+					String sql = getSqlFromAnnotation(args, annotation.value());
 					Statement statement = connection.createStatement();
 					int affectedRows = statement.executeUpdate(sql); 
 					statement.close();
@@ -43,21 +34,13 @@ public class QueryObjectFactory2 {
 				else {
 					Select select = method.getAnnotation(Select.class);
 					if(select != null) {
-						String sql = select.value();
-						if(args != null) {
-							for(int i=0;i<args.length;i++) {
-								String dataWrapper = "";
-								if(args[i].getClass() == String.class) {
-									dataWrapper = "'";
-								}
-								sql = sql.replace("?"+(i+1), dataWrapper + args[i].toString() + dataWrapper);
-							}
-						}
-						Class c = Class.forName(((ParameterizedType) method.getGenericReturnType()).getActualTypeArguments()[0].toString().split(" ")[1]);
+						String sql = getSqlFromAnnotation(args, select.value());
+						Class<?> c = Class.forName(((ParameterizedType) method.getGenericReturnType()).getActualTypeArguments()[0].toString().split(" ")[1]);
 						System.out.println(c);
 						Marshaller<?> marshaller = MarshallingFactory.getMarshaller(c);
 						Statement statement = connection.createStatement();
 						ResultSet resultSet = statement.executeQuery(sql);
+						@SuppressWarnings({ "rawtypes", "unchecked" })
 						DataSetImpl result = new DataSetImpl(resultSet, marshaller);
 						resultSet.close();
 						statement.close();
@@ -66,7 +49,21 @@ public class QueryObjectFactory2 {
 				}
 				return null;
 			}
+
+			private String getSqlFromAnnotation(Object[] args, String sql) {
+				if(args != null) {
+					for(int i=0;i<args.length;i++) {
+						String dataWrapper = "";
+						if(args[i].getClass() == String.class) {
+							dataWrapper = "'";
+						}
+						sql = sql.replace("?"+(i+1), dataWrapper + args[i].toString() + dataWrapper);
+					}
+				}
+				return sql;
+			}
 		};
+		@SuppressWarnings("unchecked")
 		T proxy = (T) Proxy.newProxyInstance(loader, interfaces, h);
 		return proxy;
 	}
