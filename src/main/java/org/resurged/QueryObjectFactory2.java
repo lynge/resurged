@@ -6,7 +6,11 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Proxy;
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Date;
+
+import javax.sql.DataSource;
 
 import org.resurged.impl.DataSetImpl;
 import org.resurged.impl.marshalling.Marshaller;
@@ -26,6 +30,7 @@ public class QueryObjectFactory2 {
 				Update annotation = method.getAnnotation(Update.class);
 				if(annotation != null) {
 					String sql = getSqlFromAnnotation(args, annotation.value());
+					System.out.println("SQL: "+sql);
 					Statement statement = connection.createStatement();
 					int affectedRows = statement.executeUpdate(sql); 
 					statement.close();
@@ -52,9 +57,9 @@ public class QueryObjectFactory2 {
 
 			private String getSqlFromAnnotation(Object[] args, String sql) {
 				if(args != null) {
-					for(int i=0;i<args.length;i++) {
+					for(int i=args.length-1;i>=0;i--) {
 						String dataWrapper = "";
-						if(args[i].getClass() == String.class) {
+						if(args[i].getClass() == String.class || args[i].getClass() == Date.class || args[i].getClass() == java.sql.Date.class) {
 							dataWrapper = "'";
 						}
 						sql = sql.replace("?"+(i+1), dataWrapper + args[i].toString() + dataWrapper);
@@ -68,4 +73,7 @@ public class QueryObjectFactory2 {
 		return proxy;
 	}
 
+	public static <T extends BaseQuery> T createQueryObject(final Class<T> clazz, final DataSource dataSource) throws SQLException {
+		return createQueryObject(clazz, dataSource.getConnection());
+	}
 }

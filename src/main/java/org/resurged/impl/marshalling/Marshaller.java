@@ -54,9 +54,8 @@ public class Marshaller <T> {
 	}
 	
 	// Recursive traversion of fields on pojo class
-	@SuppressWarnings("unchecked")
-	private static void traverseFields(Class klass, HashMap<String, Field> fields){
-		Class superclass = klass.getSuperclass();
+	private static void traverseFields(Class<?> klass, HashMap<String, Field> fields){
+		Class<?> superclass = klass.getSuperclass();
 		if(superclass!=Object.class)
 			traverseFields(superclass, fields);
 			

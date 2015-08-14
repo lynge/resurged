@@ -9,7 +9,7 @@ import org.resurged.jdbc.Update;
 
 public interface DataTypesDao extends BaseQuery{
 	//@Update("CREATE TABLE DataTypes(boolean1 smallint, boolean2 int, byte1 smallint, byte2 int, char1 varchar(1), char2 char(1), short1 smallint, short2 int, int1 int, int2 bigint, long1 bigint, long2 bigint, float1 real, float2 double, double1 float, double2 double, string1 char(254), string2 varchar(255))")
-	@Update("CREATE TABLE DataTypes (boolean1 smallint, boolean2 int, byte1 smallint, byte2 int, short1 smallint, short2 int, int1 int, int2 bigint, long1 bigint, long2 bigint, float1 real, float2 double, double1 float, double2 double, string1 char(254), string2 varchar(255), date1 date, date2 date)")
+	@Update("CREATE TABLE DataTypes (boolean1 boolean, boolean2 boolean, byte1 smallint, byte2 int, short1 smallint, short2 int, int1 int, int2 bigint, long1 bigint, long2 bigint, float1 real, float2 double, double1 float, double2 double, string1 char(254), string2 varchar(255), date1 date, date2 date)")
 	public int createTable();
 	
 	@Update("drop table DataTypes")

@@ -1,7 +1,7 @@
 
 
 import org.junit.Test;
-import org.resurged.QueryObjectFactory;
+import org.resurged.QueryObjectFactory2;
 import org.resurged.impl.Log;
 import org.resurged.test.util.AbstractTestCase;
 import org.resurged.test.util.Vendor;
@@ -15,7 +15,7 @@ public class NoPackageTest extends AbstractTestCase {
 	}
 	
 	public void init() throws Exception{
-		dao = QueryObjectFactory.createQueryObject(NoPackageDao.class, getConnection(), configuration);
+		dao = QueryObjectFactory2.createQueryObject(NoPackageDao.class, getConnection());
 		Log.info(this, "PersonDao loaded");
 
 		int createResult = dao.createTable();

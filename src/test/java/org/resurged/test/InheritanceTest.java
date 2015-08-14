@@ -2,7 +2,7 @@ package org.resurged.test;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.resurged.QueryObjectFactory;
+import org.resurged.QueryObjectFactory2;
 import org.resurged.impl.Log;
 import org.resurged.jdbc.DataSet;
 import org.resurged.test.model.InheritanceChildDao;
@@ -19,7 +19,7 @@ public class InheritanceTest extends AbstractTestCase {
 	}
 	
 	public void init() throws Exception{
-		dao = QueryObjectFactory.createQueryObject(InheritanceChildDao.class, getConnection(), configuration);
+		dao = QueryObjectFactory2.createQueryObject(InheritanceChildDao.class, getConnection());
 		Log.info(this, "InheritanceParentDao loaded");
 
 		int createResult = dao.createTable();

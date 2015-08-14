@@ -13,7 +13,6 @@ import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
-import org.resurged.Config;
 import org.resurged.impl.Log;
 
 @RunWith(Parameterized.class)
@@ -30,7 +29,6 @@ public abstract class AbstractTestCase {
 	private static Vendor[] vendors;
 	protected Vendor vendor;
 	
-	protected Config configuration=new Config();
 	private Connection con = null;
 	private DataSource ds = null;
 	
@@ -39,7 +37,6 @@ public abstract class AbstractTestCase {
 
     public AbstractTestCase(Vendor vendor) {
 		this.vendor = vendor;
-		Config.setLoggingStrategy(new Log.ConsoleLogger());
     }
     
     @Before

@@ -3,7 +3,7 @@ package org.resurged.test;
 import junit.framework.Assert;
 
 import org.junit.Test;
-import org.resurged.QueryObjectFactory;
+import org.resurged.QueryObjectFactory2;
 import org.resurged.impl.Log;
 import org.resurged.jdbc.DataSet;
 import org.resurged.test.model.AutoIncrDao;
@@ -24,7 +24,7 @@ public class AutoIncrTest extends AbstractTestCase {
     	if(vendor!=Vendor.MySql)
     		return;
     	
-    	dao = (AutoIncrDao) QueryObjectFactory.createQueryObject(DaoLocator.getClass(AutoIncrDao.class, vendor), getConnection(), configuration);
+    	dao = (AutoIncrDao) QueryObjectFactory2.createQueryObject(DaoLocator.getClass(AutoIncrDao.class, vendor), getConnection());
 		
     	Log.info(this, dao.getClass().getName() + " loaded");
 

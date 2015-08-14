@@ -2,13 +2,12 @@ package org.resurged.test;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.resurged.QueryObjectFactory;
+import org.resurged.QueryObjectFactory2;
 import org.resurged.impl.Log;
 import org.resurged.jdbc.DataSet;
 import org.resurged.test.model.oracle.OracleDataTypesDao;
 import org.resurged.test.model.oracle.OracleDataTypesPojo;
 import org.resurged.test.util.AbstractTestCase;
-import org.resurged.test.util.MyFieldMarshaller;
 import org.resurged.test.util.Vendor;
 
 
@@ -23,7 +22,7 @@ public class FieldMarshallerTest extends AbstractTestCase {
     	if(vendor!=Vendor.Oracle)
     		return;
     	
-		dao = QueryObjectFactory.createQueryObject(OracleDataTypesDao.class, getConnection(), MyFieldMarshaller.class);
+		dao = QueryObjectFactory2.createQueryObject(OracleDataTypesDao.class, getConnection());
 		Log.info(this, "OracleDao loaded");
 
 		int createResult = dao.createTable();
