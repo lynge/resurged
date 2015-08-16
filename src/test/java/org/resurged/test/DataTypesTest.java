@@ -4,7 +4,7 @@ import java.util.Date;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.resurged.QueryObjectFactory2;
+import org.resurged.QueryObjectFactory;
 import org.resurged.impl.Log;
 import org.resurged.jdbc.DataSet;
 import org.resurged.test.model.DataTypesPojo;
@@ -24,7 +24,7 @@ public class DataTypesTest extends AbstractTestCase {
     	if(vendor!=Vendor.Derby)
     		return;
     	
-		dao = QueryObjectFactory2.createQueryObject(DataTypesDao.class, getConnection());
+		dao = QueryObjectFactory.createQueryObject(DataTypesDao.class, getConnection());
 		Log.info(this, "DataTypesDao loaded");
 
 		int createResult = dao.createTable();

@@ -8,7 +8,7 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.resurged.QueryObjectFactory2;
+import org.resurged.QueryObjectFactory;
 import org.resurged.impl.Log;
 import org.resurged.jdbc.DataSet;
 import org.resurged.test.model.BaseDao;
@@ -22,7 +22,7 @@ public class BasicTest2 {
 	public void init() throws ClassNotFoundException, SQLException {
 		Class.forName("org.apache.derby.jdbc.EmbeddedDriver");
 		Connection connection = DriverManager.getConnection("jdbc:derby:MyDbTest;create=true");
-		dao = QueryObjectFactory2.createQueryObject(BaseDao.class, connection);
+		dao = QueryObjectFactory.createQueryObject(BaseDao.class, connection);
 		dao.createTable();
 	}
 	

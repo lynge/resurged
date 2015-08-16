@@ -2,7 +2,7 @@ package org.resurged.test;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.resurged.QueryObjectFactory2;
+import org.resurged.QueryObjectFactory;
 import org.resurged.impl.Log;
 import org.resurged.jdbc.DataSet;
 import org.resurged.test.model.BasePojo;
@@ -18,7 +18,7 @@ public class DataSourceTest extends AbstractTestCase {
 	}
 	
 	public void init() throws Exception{
-		dao = QueryObjectFactory2.createQueryObject(BaseDao.class, getDs());
+		dao = QueryObjectFactory.createQueryObject(BaseDao.class, getDs());
 		Log.info(this, "PersonDao loaded");
 
 		int createResult = dao.createTable();

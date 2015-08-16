@@ -2,7 +2,7 @@ package org.resurged.test;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.resurged.QueryObjectFactory2;
+import org.resurged.QueryObjectFactory;
 import org.resurged.impl.Log;
 import org.resurged.test.model.BaseDao;
 import org.resurged.test.util.AbstractTestCase;
@@ -17,7 +17,7 @@ public class DefaultGeneratorTest extends AbstractTestCase {
 	}
 	
 	public void init() throws Exception{
-		dao = QueryObjectFactory2.createQueryObject(BaseDao.class, getConnection());
+		dao = QueryObjectFactory.createQueryObject(BaseDao.class, getConnection());
 		Log.info(this, "PersonDao loaded");
 
 		int createResult = dao.createTable();

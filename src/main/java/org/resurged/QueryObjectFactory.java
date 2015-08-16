@@ -20,7 +20,7 @@ import org.resurged.jdbc.BaseQuery;
 import org.resurged.jdbc.Select;
 import org.resurged.jdbc.Update;
 
-public class QueryObjectFactory2 {
+public class QueryObjectFactory {
 
 	public static <T extends BaseQuery> T createQueryObject(final Class<T> clazz, final Connection connection) {
 		System.out.println(clazz.getName());
