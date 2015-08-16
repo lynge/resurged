@@ -7,7 +7,7 @@ import org.resurged.jdbc.Update;
 
 public interface InheritanceParentDao extends BaseQuery{
 	
-	@Update(sql="CREATE TABLE Persons(ID int, firstName varchar(255), lastName varchar(255))")
+	@Update("CREATE TABLE Persons(ID int, firstName varchar(255), lastName varchar(255))")
 	public int createTable();
 	
 	@Update("drop table Persons")

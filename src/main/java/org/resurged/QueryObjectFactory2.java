@@ -8,6 +8,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Arrays;
 import java.util.Date;
 
 import javax.sql.DataSource;
@@ -22,8 +23,10 @@ import org.resurged.jdbc.Update;
 public class QueryObjectFactory2 {
 
 	public static <T extends BaseQuery> T createQueryObject(final Class<T> clazz, final Connection connection) {
+		System.out.println(clazz.getName());
 		ClassLoader loader = clazz.getClassLoader();
 		Class<?>[] interfaces = {clazz};
+		System.out.println(Arrays.toString(interfaces));
 		InvocationHandler h = new InvocationHandler() {
 			
 			public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
@@ -58,11 +61,20 @@ public class QueryObjectFactory2 {
 			private String getSqlFromAnnotation(Object[] args, String sql) {
 				if(args != null) {
 					for(int i=args.length-1;i>=0;i--) {
-						String dataWrapper = "";
-						if(args[i].getClass() == String.class || args[i].getClass() == Date.class || args[i].getClass() == java.sql.Date.class) {
-							dataWrapper = "'";
+						String argument = "";
+						if(args[i].getClass() == String.class) {
+							argument = "'"+args[i]+"'";
+						} else if(Date.class.isAssignableFrom(args[i].getClass())) {
+							if(args[i].getClass() == Date.class) {
+								java.sql.Date date = new java.sql.Date(((Date)args[i]).getTime());
+								argument = "'"+date.toString()+"'";
+							} else {
+								argument = "'"+args[i].toString()+"'";
+							}
+						} else {
+							argument = args[i].toString();
 						}
-						sql = sql.replace("?"+(i+1), dataWrapper + args[i].toString() + dataWrapper);
+						sql = sql.replace("?"+(i+1), argument);
 					}
 				}
 				return sql;
